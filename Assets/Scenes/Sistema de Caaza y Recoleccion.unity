@@ -159,6 +159,8 @@ MonoBehaviour:
   speed: 5
   meatAmount: 2
   leatherAmount: 3
+  meatPrefab: {fileID: 5978875065311841193, guid: 644f56ffe9956514a8e9e6592b1f4d68, type: 3}
+  leatherPrefab: {fileID: 3811669572154343477, guid: 4e8396a52e4d4444f9b5282bd9c66801, type: 3}
 --- !u!65 &96229147
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -445,7 +447,7 @@ GameObject:
   - component: {fileID: 1779376724}
   m_Layer: 0
   m_Name: Plane
-  m_TagString: Untagged
+  m_TagString: floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
