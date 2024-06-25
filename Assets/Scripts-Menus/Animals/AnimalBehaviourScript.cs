@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class AnimalBehaviourScript : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class AnimalBehaviourScript : MonoBehaviour
     public int leatherAmount;
     public GameObject meatPrefab;
     public GameObject leatherPrefab;
+
 
     // Start is called before the first frame update
     public void TakeDamage(float damage)
@@ -35,17 +37,17 @@ public class AnimalBehaviourScript : MonoBehaviour
         if (meatPrefab != null)
         {
             GameObject meat = Instantiate(meatPrefab, transform.position, Quaternion.identity);
-            LootScript meatLoot = meat.GetComponent<LootScript>();
-            meatLoot.amount = meatAmount;
-            meatLoot.lootName = "Meats";
+            //LootScript meatLoot = meat.GetComponent<LootScript>();
+            //meatLoot.amount = meatAmount;
+            //meatLoot.lootName = "Meats";
         }
 
         if (leatherPrefab != null)
         {
             GameObject leather = Instantiate(leatherPrefab, transform.position, Quaternion.identity);
-            LootScript leatherLoot = leather.GetComponent<LootScript>();
-            leatherLoot.amount = leatherAmount;
-            leatherLoot.lootName = "Leathers";
+            //LootScript leatherLoot = leather.GetComponent<LootScript>();
+            //leatherLoot.amount = leatherAmount;
+            //leatherLoot.lootName = "Leathers";
         }
     }
 }
