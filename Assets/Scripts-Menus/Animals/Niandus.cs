@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Niandus : MonoBehaviour
+public class Niandus : AnimalBehaviourScript
 {
     public NavMeshAgent agent;
     private Transform player;
@@ -17,6 +17,13 @@ public class Niandus : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        animalName = "Niandus";
+        health = 100f;
+        speed = 5f;
+        meatAmount = 10;
+        leatherAmount = 5;
+        // Aquí deberías asignar los prefabs de meatPrefab y leatherPrefab según tu diseño
+
         agent = GetComponent<NavMeshAgent>();
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
