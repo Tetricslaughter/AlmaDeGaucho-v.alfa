@@ -8,6 +8,8 @@ TagManager:
   - Boleadora
   - Facon
   - Obstacle
+  - armaEnemy
+  - poncho
   layers:
   - Default
   - TransparentFX
