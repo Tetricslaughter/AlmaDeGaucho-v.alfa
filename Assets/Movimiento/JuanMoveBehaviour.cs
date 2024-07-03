@@ -25,13 +25,22 @@ namespace SUPERCharacte
     public class JuanMoveBehaviour : MonoBehaviour
     {
         #region Variables
-
+        public Controller controller;
+        public GameObject posCamera;
         public bool cubriendose;
         public bool atacando;
         public bool tengoFacon;
         public bool tengoRifle;
+        public bool tengoBoleadoras;
         public bool controllerPaused = false;
         public Vector3 ultimaPosicion;
+
+        #region Movimiento2
+        public float speed = 5f;
+        public float speedRotate = 200f;
+        public float horizontal;
+        public float vertical;
+        #endregion
 
         #region Camera Settings
         [Header("Camera Settings")]
@@ -160,7 +169,7 @@ namespace SUPERCharacte
         float _2DVelocityMag, speedToVelocityRatio;
         PhysicMaterial _ZeroFriction, _MaxFriction;
         CapsuleCollider capsule;
-        Rigidbody p_Rigidbody;
+        public Rigidbody p_Rigidbody;
         bool crouchInput_Momentary, crouchInput_FrameOf, sprintInput_FrameOf, sprintInput_Momentary, slideInput_FrameOf, slideInput_Momentary;
         bool changingStances = false;
 
@@ -215,7 +224,8 @@ namespace SUPERCharacte
         //ThirdPerson
         public Animator _3rdPersonCharacterAnimator;
         public string a_velocity, a_2DVelocity, a_Grounded, a_Idle, a_Jumped,
-            a_Sliding, a_Sprinting, a_Crouching, a_facon, a_faconazo, a_esquivar, a_poncho, a_velXZ, a_rifle;
+            a_Sliding, a_Sprinting, a_Crouching, a_facon, a_faconazo, a_esquivar,
+            a_poncho, a_velXZ, a_rifle, a_boleadoras, a_VelX, a_VelY, a_lanzar;
         public bool stickRendererToCapsuleBottom = true;
         public Vector3 velXZ;
 
@@ -229,7 +239,10 @@ namespace SUPERCharacte
 
             tengoFacon = false;
             tengoRifle = false;
+            tengoBoleadoras = false;
             cubriendose = false;
+
+
 
             #region Camera
             maxCameraDistInternal = maxCameraDistance;
@@ -279,54 +292,9 @@ namespace SUPERCharacte
                     stamMeter.rectTransform.anchoredPosition = new Vector2(0, 22);
                     stamMeter.color = Color.white;
                     stamMeter.gameObject.SetActive(enableStaminaSystem);
-                  /*  //Stats Panel
-                    statsPanel = new GameObject("Stats Panel").AddComponent<Image>();
-                    statsPanel.rectTransform.sizeDelta = new Vector2(3, 45);
-                    statsPanel.transform.SetParent(canvas.transform);
-                    statsPanel.rectTransform.anchorMin = new Vector2(0, 0);
-                    statsPanel.rectTransform.anchorMax = new Vector2(0, 0);
-                    statsPanel.rectTransform.anchoredPosition = new Vector2(12, 33);
-                    statsPanel.color = Color.clear;
-                    //statsPanel.gameObject.SetActive(enableSurvivalStats);
-                    statsPanel.gameObject.SetActive(false);
-                    //Stats Panel BG
-                    statsPanelBG = new GameObject("Stats Panel BG").AddComponent<Image>();
-                    statsPanelBG.rectTransform.sizeDelta = new Vector2(175, 45);
-                    statsPanelBG.transform.SetParent(statsPanel.transform);
-                    statsPanelBG.rectTransform.anchorMin = new Vector2(0, 0);
-                    statsPanelBG.rectTransform.anchorMax = new Vector2(1, 0);
-                    statsPanelBG.rectTransform.anchoredPosition = new Vector2(87, 22);
-                    statsPanelBG.color = Color.white * 0.5f;
-                    //Health Meter
-                    HealthMeter = new GameObject("Health Meter").AddComponent<Image>();
-                    HealthMeter.rectTransform.sizeDelta = normalMeterSizeDelta;
-                    HealthMeter.transform.SetParent(statsPanel.transform);
-                    HealthMeter.rectTransform.anchorMin = new Vector2(0, 0);
-                    HealthMeter.rectTransform.anchorMax = new Vector2(1, 0);
-                    HealthMeter.rectTransform.anchoredPosition = new Vector2(87, 6);
-                    HealthMeter.color = new Color32(211, 0, 0, 255);
-                    //Hydration Meter
-                    HydrationMeter = new GameObject("Hydration Meter").AddComponent<Image>();
-                    HydrationMeter.rectTransform.sizeDelta = normalMeterSizeDelta;
-                    HydrationMeter.transform.SetParent(statsPanel.transform);
-                    HydrationMeter.rectTransform.anchorMin = new Vector2(0, 0);
-                    HydrationMeter.rectTransform.anchorMax = new Vector2(1, 0);
-                    HydrationMeter.rectTransform.anchoredPosition = new Vector2(87, 22);
-                    HydrationMeter.color = new Color32(0, 194, 255, 255);
-                    //Hunger Meter
-                    HungerMeter = new GameObject("Hunger Meter").AddComponent<Image>();
-                    HungerMeter.rectTransform.sizeDelta = normalMeterSizeDelta;
-                    HungerMeter.transform.SetParent(statsPanel.transform);
-                    HungerMeter.rectTransform.anchorMin = new Vector2(0, 0);
-                    HungerMeter.rectTransform.anchorMax = new Vector2(1, 0);
-                    HungerMeter.rectTransform.anchoredPosition = new Vector2(87, 38);
-                    HungerMeter.color = new Color32(142, 54, 0, 255);*/
 
                 }
             }
-            /*if(cameraPerspective == PerspectiveModes._3rdPerson && !showCrosshairIn3rdPerson){
-                crosshairImg?.gameObject.SetActive(false);
-            }*/
             initialRot = transform.localEulerAngles;
             #endregion
 
@@ -413,110 +381,114 @@ namespace SUPERCharacte
             vaultInput = Input.GetKeyDown(VaultKey_L);
 #endif
                 MovInput = Vector2.up * Input.GetAxisRaw("Vertical") + Vector2.right * Input.GetAxisRaw("Horizontal");
-//#endif
+                //#endif
                 #endregion
 
-                #region Camera
-                if (enableCameraControl)
+                if (!tengoBoleadoras)
                 {
-                    switch (cameraPerspective)
+                    #region Camera
+                    if (enableCameraControl)
                     {
-                        case PerspectiveModes._1stPerson:
-                            {
-                                //This is called in FixedUpdate for the 3rd person mode
-                                //RotateView(MouseXY, Sensitivity, rotationWeight);
-                                if (!isInFirstPerson) { ChangePerspective(PerspectiveModes._1stPerson); }
-                                if (perspecTog || (automaticallySwitchPerspective && mouseScrollWheel < 0)) { ChangePerspective(PerspectiveModes._3rdPerson); }
-                                //HeadbobCycleCalculator();
-                                FOVKick();
-                            }
-                            break;
-
-                        case PerspectiveModes._3rdPerson:
-                            {
-                                //  UpdateCameraPosition_3rdPerson();
-                                if (!isInThirdPerson) { ChangePerspective(PerspectiveModes._3rdPerson); }
-                                if (perspecTog || (automaticallySwitchPerspective && maxCameraDistInternal == 0 && currentCameraZ == 0)) { ChangePerspective(PerspectiveModes._1stPerson); }
-                                maxCameraDistInternal = Mathf.Clamp(maxCameraDistInternal - (mouseScrollWheel * (cameraZoomSensitivity * 2)), automaticallySwitchPerspective ? 0 : (capsule.radius * 2), maxCameraDistance);
-                            }
-                            break;
-                    }
-
-
-                    if (setInitialRot)
-                    {
-                        setInitialRot = false;
-                        RotateView(initialRot, false);
-                        InputDir = transform.forward;
-                    }
-                }
-                if (drawPrimitiveUI)
-                {
-                   /* if (enableSurvivalStats)
-                    {
-                        if (!statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(true);
-
-                        HealthMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Health / defaultSurvivalStats.Health));
-                        HydrationMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hydration / defaultSurvivalStats.Hydration));
-                        HungerMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hunger / defaultSurvivalStats.Hunger));
-                    }
-                    else
-                    {
-                        if (statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(false);
-
-                    } */
-                    if (enableStaminaSystem)
-                    {
-                        if (!stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(true);
-                        if (!stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(true);
-                        if (staminaIsChanging)
+                        switch (cameraPerspective)
                         {
-                            if (stamMeter.color != Color.white)
+                            case PerspectiveModes._1stPerson:
+                                {
+                                    //This is called in FixedUpdate for the 3rd person mode
+                                    //RotateView(MouseXY, Sensitivity, rotationWeight);
+                                    if (!isInFirstPerson) { ChangePerspective(PerspectiveModes._1stPerson); }
+                                    if (perspecTog || (automaticallySwitchPerspective && mouseScrollWheel < 0)) { ChangePerspective(PerspectiveModes._3rdPerson); }
+                                    //HeadbobCycleCalculator();
+                                    FOVKick();
+                                }
+                                break;
+
+                            case PerspectiveModes._3rdPerson:
+                                {
+                                    //  UpdateCameraPosition_3rdPerson();
+                                    if (!isInThirdPerson) { ChangePerspective(PerspectiveModes._3rdPerson); }
+                                    if (perspecTog || (automaticallySwitchPerspective && maxCameraDistInternal == 0 && currentCameraZ == 0)) { ChangePerspective(PerspectiveModes._1stPerson); }
+                                    maxCameraDistInternal = Mathf.Clamp(maxCameraDistInternal - (mouseScrollWheel * (cameraZoomSensitivity * 2)), automaticallySwitchPerspective ? 0 : (capsule.radius * 2), maxCameraDistance);
+                                }
+                                break;
+                        }
+
+
+                        if (setInitialRot)
+                        {
+                            setInitialRot = false;
+                            RotateView(initialRot, false);
+                            InputDir = transform.forward;
+                        }
+                    }
+                    if (drawPrimitiveUI)
+                    {
+                        /* if (enableSurvivalStats)
+                         {
+                             if (!statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(true);
+
+                             HealthMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Health / defaultSurvivalStats.Health));
+                             HydrationMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hydration / defaultSurvivalStats.Hydration));
+                             HungerMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hunger / defaultSurvivalStats.Hunger));
+                         }
+                         else
+                         {
+                             if (statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(false);
+
+                         } */
+                        if (enableStaminaSystem)
+                        {
+                            if (!stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(true);
+                            if (!stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(true);
+                            if (staminaIsChanging)
                             {
-                                stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0.5f), 0.15f);
-                                stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(1, 1, 1, 1), 0.15f);
+                                if (stamMeter.color != Color.white)
+                                {
+                                    stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0.5f), 0.15f);
+                                    stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(1, 1, 1, 1), 0.15f);
+                                }
+                                stamMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 5, normalStamMeterSizeDelta, (currentStaminaLevel / Stamina));
                             }
-                            stamMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 5, normalStamMeterSizeDelta, (currentStaminaLevel / Stamina));
+                            else
+                            {
+                                if (stamMeter.color != Color.clear)
+                                {
+                                    stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0), 0.15f);
+                                    stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(0, 0, 0, 0), 0.15f);
+                                }
+                            }
                         }
                         else
                         {
-                            if (stamMeter.color != Color.clear)
-                            {
-                                stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0), 0.15f);
-                                stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(0, 0, 0, 0), 0.15f);
-                            }
+                            if (stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(false);
+                            if (stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(false);
                         }
                     }
-                    else
+
+                    if (currentStance == Stances.Standing && !changingStances)
                     {
-                        if (stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(false);
-                        if (stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(false);
+                        internalEyeHeight = standingEyeHeight;
+                    }
+                    #endregion
+
+                    //if(Input.GetKeyDown(KeyCode.Mouse0))
+                    if (!atacando && !cubriendose)
+                    {
+                        #region Movement
+                        if (cameraPerspective == PerspectiveModes._3rdPerson && !atacando)
+                        {
+                            HeadRotDirForInput = Mathf.MoveTowardsAngle(HeadRotDirForInput, headRot.y, bodyCatchupSpeed * (1 + Time.deltaTime));
+                            MovInput_Smoothed = Vector2.MoveTowards(MovInput_Smoothed, MovInput, inputResponseFiltering * (1 + Time.deltaTime));
+                        }
+                        InputDir = cameraPerspective == PerspectiveModes._1stPerson ? Vector3.ClampMagnitude((transform.forward * MovInput.y + transform.right * (viewInputMethods == ViewInputModes.Traditional ? MovInput.x : 0)), 1) : Quaternion.AngleAxis(HeadRotDirForInput, Vector3.up) * (Vector3.ClampMagnitude((Vector3.forward * MovInput_Smoothed.y + Vector3.right * MovInput_Smoothed.x), 1));
+                        GroundMovementSpeedUpdate();
+                        if (canJump && !tengoFacon && !tengoRifle && !tengoBoleadoras && (holdJump ? jumpInput_Momentary : jumpInput_FrameOf)) { Jump(jumpPower); }
+                        #endregion
+                        #region Footstep
+                        CalculateFootstepTriggers();
+                        #endregion
                     }
                 }
-
-                if (currentStance == Stances.Standing && !changingStances)
-                {
-                    internalEyeHeight = standingEyeHeight;
-                }
-                #endregion
-
-                //if(Input.GetKeyDown(KeyCode.Mouse0))
-                if (!atacando && !cubriendose)
-                {
-                    #region Movement
-                    if (cameraPerspective == PerspectiveModes._3rdPerson && !atacando)
-                    {
-                        HeadRotDirForInput = Mathf.MoveTowardsAngle(HeadRotDirForInput, headRot.y, bodyCatchupSpeed * (1 + Time.deltaTime));
-                        MovInput_Smoothed = Vector2.MoveTowards(MovInput_Smoothed, MovInput, inputResponseFiltering * (1 + Time.deltaTime));
-                    }
-                    InputDir = cameraPerspective == PerspectiveModes._1stPerson ? Vector3.ClampMagnitude((transform.forward * MovInput.y + transform.right * (viewInputMethods == ViewInputModes.Traditional ? MovInput.x : 0)), 1) : Quaternion.AngleAxis(HeadRotDirForInput, Vector3.up) * (Vector3.ClampMagnitude((Vector3.forward * MovInput_Smoothed.y + Vector3.right * MovInput_Smoothed.x), 1));
-                    GroundMovementSpeedUpdate();
-                    if (canJump && !tengoFacon && !tengoRifle && (holdJump ? jumpInput_Momentary : jumpInput_FrameOf)) { Jump(jumpPower); }
-                    #endregion
-                    #region Footstep
-                    CalculateFootstepTriggers();
-                    #endregion
-                }
+                
 
 
                 #region Stamina system
@@ -539,32 +511,41 @@ namespace SUPERCharacte
         {
             if (!controllerPaused)
             {
-                if (!atacando && !cubriendose)
+                if (!tengoBoleadoras)
                 {
-                    #region Movement
-                    if (enableMovementControl)
+                    if (!atacando && !cubriendose)
                     {
-                        GetGroundInfo();
-                        MovePlayer(InputDir, currentGroundSpeed);
-                        velXZ = new Vector3(p_Rigidbody.velocity.x, 0, p_Rigidbody.velocity.z);
-                        
-                        Debug.Log(velXZ.magnitude);
+                        #region Movement
+                        if (enableMovementControl)
+                        {
+                            GetGroundInfo();
+                            MovePlayer(InputDir, currentGroundSpeed);
+                            velXZ = new Vector3(p_Rigidbody.velocity.x, 0, p_Rigidbody.velocity.z);
 
-                        // if (isSliding) { Slide(); }
+                            Debug.Log(velXZ.magnitude);
+
+                            // if (isSliding) { Slide(); }
+                        }
+                        #endregion
+
                     }
+
+                    #region Camera
+                    RotateView(MouseXY, Sensitivity, rotationWeight);
+                    if (cameraPerspective == PerspectiveModes._3rdPerson)
+                    {
+                        UpdateBodyRotation_3rdPerson();
+                        UpdateCameraPosition_3rdPerson();
+                    }
+
                     #endregion
-
                 }
-
-                #region Camera
-                RotateView(MouseXY, Sensitivity, rotationWeight);
-                if (cameraPerspective == PerspectiveModes._3rdPerson)
+                else
                 {
-                    UpdateBodyRotation_3rdPerson();
-                    UpdateCameraPosition_3rdPerson();
+                    MovePlayer();
+                    //transform.forward = Camera.main.transform.forward;
                 }
 
-                #endregion
             }
         }
 
@@ -577,12 +558,26 @@ namespace SUPERCharacte
         {
 
         }
-     /*   private void OnTriggerEnter(Collider other)
+        #region Movement2
+        public void MovePlayer()
         {
-            #region Collectables
-            other.GetComponent<ICollectable>()?.Collect();
-            #endregion
-        }*/
+            horizontal = Input.GetAxis("Horizontal");
+            vertical = Input.GetAxis("Vertical");
+            transform.Translate(new Vector3(horizontal, 0.0f, vertical) * Time.deltaTime * speed);
+
+            float rotationY = (Input.GetAxis("Mouse X"));
+            transform.Rotate(new Vector3(0, rotationY, 0) * Time.deltaTime * speedRotate);
+            
+
+        }
+        #endregion
+
+        /*   private void OnTriggerEnter(Collider other)
+           {
+               #region Collectables
+               other.GetComponent<ICollectable>()?.Collect();
+               #endregion
+           }*/
 
         #region Camera Functions
         void RotateView(Vector2 yawPitchInput, float inputSensitivity, float cameraWeight)
@@ -1512,14 +1507,14 @@ namespace SUPERCharacte
                                 {
                                     _3rdPersonCharacterAnimator.SetBool(a_facon, tengoFacon);
                                 }
-                                if(a_faconazo != "" && Input.GetKey(KeyCode.Mouse0) && !Jumped && !atacando && tengoFacon)
+                                if(a_faconazo != "" && Input.GetKey(KeyCode.Mouse0) && !Jumped && !atacando && tengoFacon && !cubriendose && !controller.enMenuRadial)
                                 {
                                     atacando = true;
                                     p_Rigidbody.velocity = Vector3.zero;
                                     _3rdPersonCharacterAnimator.SetTrigger(a_faconazo);
                                     InstantStaminaReduction(s_FacaStaminaDepletion);
                                 }
-                                if (a_esquivar != "" && Input.GetKey(KeyCode.Space) && !Jumped && !atacando && tengoFacon)
+                                if (a_esquivar != "" && Input.GetKey(KeyCode.Space) && !Jumped && !atacando && tengoFacon && !cubriendose)
                                 {
                                     //Vector3 ultPos = transform.position;
                                     //ultimaPosicion = ultPos;
@@ -1546,6 +1541,22 @@ namespace SUPERCharacte
                                 if(a_rifle != "")
                                 {
                                     _3rdPersonCharacterAnimator.SetBool(a_rifle, tengoRifle);
+                                }
+                                if (a_boleadoras != "")
+                                {
+                                    _3rdPersonCharacterAnimator.SetBool(a_boleadoras, tengoBoleadoras);
+                                }
+                                if (a_VelX != "" && tengoBoleadoras)
+                                {
+                                    _3rdPersonCharacterAnimator.SetFloat(a_VelX, horizontal);
+                                }
+                                if (a_VelY != "" && tengoBoleadoras)
+                                {
+                                    _3rdPersonCharacterAnimator.SetFloat(a_VelY, vertical);
+                                }
+                                if (a_lanzar != "" && tengoBoleadoras && Input.GetKey(KeyCode.Mouse0) && !controller.enMenuRadial)
+                                {
+                                    _3rdPersonCharacterAnimator.SetTrigger(a_lanzar);
                                 }
 
                             }
@@ -1619,6 +1630,22 @@ namespace SUPERCharacte
                                 if (a_rifle != "")
                                 {
                                     _3rdPersonCharacterAnimator.SetBool(a_rifle, false);
+                                }
+                                if (a_boleadoras != "")
+                                {
+                                    _3rdPersonCharacterAnimator.SetBool(a_boleadoras, false);
+                                }
+                                if (a_VelX != "" && tengoBoleadoras)
+                                {
+                                    _3rdPersonCharacterAnimator.SetFloat(a_VelX, 0);
+                                }
+                                if (a_VelY != "" && tengoBoleadoras)
+                                {
+                                    _3rdPersonCharacterAnimator.SetFloat(a_VelY, 0);
+                                }
+                                if (a_lanzar != "" && tengoBoleadoras && Input.GetKey(KeyCode.Mouse0) && !controller.enMenuRadial)
+                                {
+                                    _3rdPersonCharacterAnimator.SetTrigger(a_lanzar);
                                 }
                             }
 
@@ -1783,12 +1810,12 @@ namespace SUPERCharacte
             BoxPanel = BoxPanel != null ? BoxPanel : new GUIStyle(GUI.skin.box) { normal = { background = BoxPanelColor } };
             #endregion
 
-          /*  #region PlaymodeWarning
-            if (Application.isPlaying)
-            {
-                EditorGUILayout.HelpBox("It is recommended you switch to another Gameobject's inspector, Updates to this inspector panel during playmode can cause lag in the rigidbody calculations and cause unwanted adverse effects to gameplay. \n\n Please note this is NOT an issue in application builds.", MessageType.Warning);
-            }
-            #endregion*/
+            /*  #region PlaymodeWarning
+              if (Application.isPlaying)
+              {
+                  EditorGUILayout.HelpBox("It is recommended you switch to another Gameobject's inspector, Updates to this inspector panel during playmode can cause lag in the rigidbody calculations and cause unwanted adverse effects to gameplay. \n\n Please note this is NOT an issue in application builds.", MessageType.Warning);
+              }
+              #endregion*/
 
             /*#region Label  
             EditorGUILayout.Space();
@@ -1803,6 +1830,10 @@ namespace SUPERCharacte
             //GUILayout.Label("<b><i><size=18><color=#FC80A5>S</color><color=#FFFF9F>U</color><color=#99FF99>P</color><color=#76D7EA>E</color><color=#BF8FCC>R</color></size></i></b> <size=12><i>Character Controller</i></size>", l_scriptHeaderStyle, GUILayout.ExpandWidth(true));
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider, GUILayout.MaxHeight(6)); EditorGUILayout.Space();
             #endregion*/
+            t.controller = (Controller)EditorGUILayout.ObjectField(new GUIContent("Player", "The "), t.controller, typeof(Controller), true);
+            t.posCamera = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Posicion Camara", "The "), t.posCamera, typeof(GameObject), true);
+            t.speed = EditorGUILayout.Slider(new GUIContent("", ""), t.speed, 0.0f, 10.0f);
+            t.speedRotate = EditorGUILayout.Slider(new GUIContent("", ""), t.speedRotate, 50.0f, 300.0f);
 
             #region Camera Settings
             GUILayout.Label("Camera Settings", labelHeaderStyle, GUILayout.ExpandWidth(true));
@@ -2139,6 +2170,10 @@ namespace SUPERCharacte
                 t.a_poncho = EditorGUILayout.TextField(new GUIContent("Poncho (Bool)", "(Bool"), t.a_poncho);
                 t.a_velXZ = EditorGUILayout.TextField(new GUIContent("velXZ (Float)", "(Float)"), t.a_velXZ);
                 t.a_rifle = EditorGUILayout.TextField(new GUIContent("Rifle (Bool)", "(Bool) Rifle"), t.a_rifle);
+                t.a_boleadoras = EditorGUILayout.TextField(new GUIContent("Boleadoras (Bool)", "(Bool) Boleadoras"), t.a_boleadoras);
+                t.a_VelX = EditorGUILayout.TextField(new GUIContent("VelX (Float)", "(Float)"), t.a_VelX);
+                t.a_VelY = EditorGUILayout.TextField(new GUIContent("VelY (Float)", "(Float)"), t.a_VelY);
+                t.a_lanzar = EditorGUILayout.TextField(new GUIContent("LanzarB (Trigger)", "(Trigger"), t.a_lanzar);
                 EditorGUILayout.EndVertical();
             }
             //EditorGUILayout.HelpBox("WIP - This is a work in progress feature and currently very primitive.\n\n No triggers, bools, floats, or ints are set up in the script. To utilize this feature, find 'UpdateAnimationTriggers()' function in this script and set up triggers with the correct string names there. This function gets called by the script whenever a relevant parameter gets updated. (I.e. when 'isVaulting' changes)", MessageType.Info);

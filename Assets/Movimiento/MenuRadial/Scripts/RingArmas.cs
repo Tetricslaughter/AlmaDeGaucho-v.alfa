@@ -9,4 +9,5 @@ public class RingArmas : ScriptableObject
     public bool faconYPoncho;
     public bool rifle;
     public bool manos;
+    public bool boleadoras;
 }
