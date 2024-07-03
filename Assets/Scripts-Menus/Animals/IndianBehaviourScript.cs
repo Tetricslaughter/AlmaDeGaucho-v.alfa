@@ -11,6 +11,7 @@ public class IndianBehaviourScript : EnemyBehaviourScript
     public float stopDistance = 3f; // distancia a la que se detendrá antes de atacar
     public float attackDamage = 10f; // daño
     public float attackCooldown = 1f; // tiempo de espera de ataques
+    public Animator animator;
 
     private bool isAttacking = false;
     private float lastAttackTime;
@@ -28,6 +29,7 @@ public class IndianBehaviourScript : EnemyBehaviourScript
         {
             Debug.LogError("Player not found!");
         }
+        animator = GetComponent<Animator>();    
     }
 
     // Update is called once per frame
@@ -43,6 +45,8 @@ public class IndianBehaviourScript : EnemyBehaviourScript
         // dentro del radio de detección se acerca
         if (distanceToPlayer < detectionRadius && distanceToPlayer > stopDistance)
         {
+            isAttacking = false; 
+            animator.SetBool("isMove", true);
             MoveTowardsPlayer();
         }
         else if (distanceToPlayer <= stopDistance)// se detiene a cierta distancia del jugador y ataca
@@ -51,26 +55,34 @@ public class IndianBehaviourScript : EnemyBehaviourScript
             if (distanceToPlayer <= attackRadius && !isAttacking)
             {
                 isAttacking = true;
+                animator.SetBool("isMove", false);
+                //animator.SetTrigger("atack");
                 StartCoroutine(AttackPlayer());
             }
         }
         else
         {
             // se detiene si el jugador está fuera del rango de detección
+            isAttacking = false;
             agent.isStopped = true;
+            animator.SetBool("isMove", false);
         }
+        animator.SetBool("attack", isAttacking);
     }
 
     private void MoveTowardsPlayer()
     {
+        
         agent.isStopped = false;
         agent.SetDestination(player.position);
     }
 
     private IEnumerator AttackPlayer()
     {
-        while (isAttacking)
+        if (isAttacking)
         {
+            Debug.Log("atacando");
+
             if (Time.time > lastAttackTime + attackCooldown)
             {
                 lastAttackTime = Time.time;

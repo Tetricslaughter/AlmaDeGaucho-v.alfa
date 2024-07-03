@@ -230,6 +230,14 @@ PrefabInstance:
       propertyPath: agent
       value: 
       objectReference: {fileID: 970505049}
+    - target: {fileID: 3371239766663545130, guid: b0c109b2f82f5d54b89479b586442fd5, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 791958857}
+    - target: {fileID: 3371239766663545130, guid: b0c109b2f82f5d54b89479b586442fd5, type: 3}
+      propertyPath: entityName
+      value: Niandus
+      objectReference: {fileID: 0}
     - target: {fileID: 7035282952362871850, guid: b0c109b2f82f5d54b89479b586442fd5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 82.9
@@ -494,6 +502,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  isRunning: 0
+  moveSpeed: 3
+  runSpeed: 10
 --- !u!114 &791958859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -790,6 +801,7 @@ MonoBehaviour:
   agent: {fileID: 1467339969}
   detectionRadius: 20
   attackRadius: 2
+  stopDistance: 3
   attackDamage: 10
   attackCooldown: 1
 --- !u!135 &1467339965
