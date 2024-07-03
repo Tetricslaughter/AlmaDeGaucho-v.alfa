@@ -35,6 +35,9 @@ namespace SUPERCharacte
         public bool controllerPaused = false;
         public Vector3 ultimaPosicion;
 
+        public bool estaMuerto;
+        public bool murio;
+
         #region Movimiento2
         public float speed = 5f;
         public float speedRotate = 200f;
@@ -225,7 +228,7 @@ namespace SUPERCharacte
         public Animator _3rdPersonCharacterAnimator;
         public string a_velocity, a_2DVelocity, a_Grounded, a_Idle, a_Jumped,
             a_Sliding, a_Sprinting, a_Crouching, a_facon, a_faconazo, a_esquivar,
-            a_poncho, a_velXZ, a_rifle, a_boleadoras, a_VelX, a_VelY, a_lanzar;
+            a_poncho, a_velXZ, a_rifle, a_boleadoras, a_VelX, a_VelY, a_lanzar, a_isDeath;
         public bool stickRendererToCapsuleBottom = true;
         public Vector3 velXZ;
 
@@ -241,6 +244,8 @@ namespace SUPERCharacte
             tengoRifle = false;
             tengoBoleadoras = false;
             cubriendose = false;
+            estaMuerto = false;
+            murio = false;
 
 
 
@@ -326,190 +331,194 @@ namespace SUPERCharacte
         }
         void Update()
         {
-            if (!controllerPaused)
+            if (!estaMuerto)
             {
-                //EquiparFacon();
-                #region Input
-/*#if ENABLE_INPUT_SYSTEM
-            MouseXY.x = Mouse.current.delta.y.ReadValue()/50;
-            MouseXY.y = Mouse.current.delta.x.ReadValue()/50;
-            
-            mouseScrollWheel = Mouse.current.scroll.y.ReadValue()/1000;
-            if(perspectiveSwitchingKey!=Key.None)perspecTog = Keyboard.current[perspectiveSwitchingKey].wasPressedThisFrame;
-            if(interactKey!=Key.None)interactInput = Keyboard.current[interactKey].wasPressedThisFrame;
-            //movement
+                if (!controllerPaused)
+                {
+                    //EquiparFacon();
+                    #region Input
+                    /*#if ENABLE_INPUT_SYSTEM
+                                MouseXY.x = Mouse.current.delta.y.ReadValue()/50;
+                                MouseXY.y = Mouse.current.delta.x.ReadValue()/50;
 
-             if(jumpKey!=Key.None)jumpInput_Momentary =  Keyboard.current[jumpKey].isPressed;
-             if(jumpKey!=Key.None)jumpInput_FrameOf =  Keyboard.current[jumpKey].wasPressedThisFrame;
+                                mouseScrollWheel = Mouse.current.scroll.y.ReadValue()/1000;
+                                if(perspectiveSwitchingKey!=Key.None)perspecTog = Keyboard.current[perspectiveSwitchingKey].wasPressedThisFrame;
+                                if(interactKey!=Key.None)interactInput = Keyboard.current[interactKey].wasPressedThisFrame;
+                                //movement
 
-             if(crouchKey!=Key.None){
-                crouchInput_Momentary =  Keyboard.current[crouchKey].isPressed;
-                crouchInput_FrameOf = Keyboard.current[crouchKey].wasPressedThisFrame;
-             }
-             if(sprintKey!=Key.None){
-                sprintInput_Momentary = Keyboard.current[sprintKey].isPressed;
-                sprintInput_FrameOf = Keyboard.current[sprintKey].wasPressedThisFrame;
-             }
-             if(slideKey != Key.None){
-                slideInput_Momentary = Keyboard.current[slideKey].isPressed;
-                slideInput_FrameOf = Keyboard.current[slideKey].wasPressedThisFrame;
-             }
-#if SAIO_ENABLE_PARKOUR
-            vaultInput = Keyboard.current[VaultKey].isPressed;
-#endif
-            MovInput.x = Keyboard.current.aKey.isPressed ? -1 : Keyboard.current.dKey.isPressed ? 1 : 0;
-            MovInput.y = Keyboard.current.wKey.isPressed ? 1 : Keyboard.current.sKey.isPressed ? -1 : 0;
-#else */
-                //camera
-                MouseXY.x = Input.GetAxis("Mouse Y");
-                MouseXY.y = Input.GetAxis("Mouse X");
-                mouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
-                //perspecTog = Input.GetKeyDown(perspectiveSwitchingKey_L);
-                //interactInput = Input.GetKeyDown(interactKey_L);
-                //movement
+                                 if(jumpKey!=Key.None)jumpInput_Momentary =  Keyboard.current[jumpKey].isPressed;
+                                 if(jumpKey!=Key.None)jumpInput_FrameOf =  Keyboard.current[jumpKey].wasPressedThisFrame;
 
-                jumpInput_Momentary = Input.GetKey(jumpKey_L);
-                jumpInput_FrameOf = Input.GetKeyDown(jumpKey_L);
-                crouchInput_Momentary = Input.GetKey(crouchKey_L);
-                crouchInput_FrameOf = Input.GetKeyDown(crouchKey_L);
-                sprintInput_Momentary = Input.GetKey(sprintKey_L);
-                sprintInput_FrameOf = Input.GetKeyDown(sprintKey_L);
-                slideInput_Momentary = Input.GetKey(slideKey_L);
-                slideInput_FrameOf = Input.GetKeyDown(slideKey_L);
+                                 if(crouchKey!=Key.None){
+                                    crouchInput_Momentary =  Keyboard.current[crouchKey].isPressed;
+                                    crouchInput_FrameOf = Keyboard.current[crouchKey].wasPressedThisFrame;
+                                 }
+                                 if(sprintKey!=Key.None){
+                                    sprintInput_Momentary = Keyboard.current[sprintKey].isPressed;
+                                    sprintInput_FrameOf = Keyboard.current[sprintKey].wasPressedThisFrame;
+                                 }
+                                 if(slideKey != Key.None){
+                                    slideInput_Momentary = Keyboard.current[slideKey].isPressed;
+                                    slideInput_FrameOf = Keyboard.current[slideKey].wasPressedThisFrame;
+                                 }
+                    #if SAIO_ENABLE_PARKOUR
+                                vaultInput = Keyboard.current[VaultKey].isPressed;
+                    #endif
+                                MovInput.x = Keyboard.current.aKey.isPressed ? -1 : Keyboard.current.dKey.isPressed ? 1 : 0;
+                                MovInput.y = Keyboard.current.wKey.isPressed ? 1 : Keyboard.current.sKey.isPressed ? -1 : 0;
+                    #else */
+                    //camera
+                    MouseXY.x = Input.GetAxis("Mouse Y");
+                    MouseXY.y = Input.GetAxis("Mouse X");
+                    mouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
+                    //perspecTog = Input.GetKeyDown(perspectiveSwitchingKey_L);
+                    //interactInput = Input.GetKeyDown(interactKey_L);
+                    //movement
+
+                    jumpInput_Momentary = Input.GetKey(jumpKey_L);
+                    jumpInput_FrameOf = Input.GetKeyDown(jumpKey_L);
+                    crouchInput_Momentary = Input.GetKey(crouchKey_L);
+                    crouchInput_FrameOf = Input.GetKeyDown(crouchKey_L);
+                    sprintInput_Momentary = Input.GetKey(sprintKey_L);
+                    sprintInput_FrameOf = Input.GetKeyDown(sprintKey_L);
+                    slideInput_Momentary = Input.GetKey(slideKey_L);
+                    slideInput_FrameOf = Input.GetKeyDown(slideKey_L);
 #if SAIO_ENABLE_PARKOUR
 
             vaultInput = Input.GetKeyDown(VaultKey_L);
 #endif
-                MovInput = Vector2.up * Input.GetAxisRaw("Vertical") + Vector2.right * Input.GetAxisRaw("Horizontal");
-                //#endif
-                #endregion
+                    MovInput = Vector2.up * Input.GetAxisRaw("Vertical") + Vector2.right * Input.GetAxisRaw("Horizontal");
+                    //#endif
+                    #endregion
 
-                if (!tengoBoleadoras)
-                {
-                    #region Camera
-                    if (enableCameraControl)
+                    if (!tengoBoleadoras)
                     {
-                        switch (cameraPerspective)
+                        #region Camera
+                        if (enableCameraControl)
                         {
-                            case PerspectiveModes._1stPerson:
-                                {
-                                    //This is called in FixedUpdate for the 3rd person mode
-                                    //RotateView(MouseXY, Sensitivity, rotationWeight);
-                                    if (!isInFirstPerson) { ChangePerspective(PerspectiveModes._1stPerson); }
-                                    if (perspecTog || (automaticallySwitchPerspective && mouseScrollWheel < 0)) { ChangePerspective(PerspectiveModes._3rdPerson); }
-                                    //HeadbobCycleCalculator();
-                                    FOVKick();
-                                }
-                                break;
-
-                            case PerspectiveModes._3rdPerson:
-                                {
-                                    //  UpdateCameraPosition_3rdPerson();
-                                    if (!isInThirdPerson) { ChangePerspective(PerspectiveModes._3rdPerson); }
-                                    if (perspecTog || (automaticallySwitchPerspective && maxCameraDistInternal == 0 && currentCameraZ == 0)) { ChangePerspective(PerspectiveModes._1stPerson); }
-                                    maxCameraDistInternal = Mathf.Clamp(maxCameraDistInternal - (mouseScrollWheel * (cameraZoomSensitivity * 2)), automaticallySwitchPerspective ? 0 : (capsule.radius * 2), maxCameraDistance);
-                                }
-                                break;
-                        }
-
-
-                        if (setInitialRot)
-                        {
-                            setInitialRot = false;
-                            RotateView(initialRot, false);
-                            InputDir = transform.forward;
-                        }
-                    }
-                    if (drawPrimitiveUI)
-                    {
-                        /* if (enableSurvivalStats)
-                         {
-                             if (!statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(true);
-
-                             HealthMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Health / defaultSurvivalStats.Health));
-                             HydrationMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hydration / defaultSurvivalStats.Hydration));
-                             HungerMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hunger / defaultSurvivalStats.Hunger));
-                         }
-                         else
-                         {
-                             if (statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(false);
-
-                         } */
-                        if (enableStaminaSystem)
-                        {
-                            if (!stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(true);
-                            if (!stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(true);
-                            if (staminaIsChanging)
+                            switch (cameraPerspective)
                             {
-                                if (stamMeter.color != Color.white)
+                                case PerspectiveModes._1stPerson:
+                                    {
+                                        //This is called in FixedUpdate for the 3rd person mode
+                                        //RotateView(MouseXY, Sensitivity, rotationWeight);
+                                        if (!isInFirstPerson) { ChangePerspective(PerspectiveModes._1stPerson); }
+                                        if (perspecTog || (automaticallySwitchPerspective && mouseScrollWheel < 0)) { ChangePerspective(PerspectiveModes._3rdPerson); }
+                                        //HeadbobCycleCalculator();
+                                        FOVKick();
+                                    }
+                                    break;
+
+                                case PerspectiveModes._3rdPerson:
+                                    {
+                                        //  UpdateCameraPosition_3rdPerson();
+                                        if (!isInThirdPerson) { ChangePerspective(PerspectiveModes._3rdPerson); }
+                                        if (perspecTog || (automaticallySwitchPerspective && maxCameraDistInternal == 0 && currentCameraZ == 0)) { ChangePerspective(PerspectiveModes._1stPerson); }
+                                        maxCameraDistInternal = Mathf.Clamp(maxCameraDistInternal - (mouseScrollWheel * (cameraZoomSensitivity * 2)), automaticallySwitchPerspective ? 0 : (capsule.radius * 2), maxCameraDistance);
+                                    }
+                                    break;
+                            }
+
+
+                            if (setInitialRot)
+                            {
+                                setInitialRot = false;
+                                RotateView(initialRot, false);
+                                InputDir = transform.forward;
+                            }
+                        }
+                        if (drawPrimitiveUI)
+                        {
+                            /* if (enableSurvivalStats)
+                             {
+                                 if (!statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(true);
+
+                                 HealthMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Health / defaultSurvivalStats.Health));
+                                 HydrationMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hydration / defaultSurvivalStats.Hydration));
+                                 HungerMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 12, normalMeterSizeDelta, (currentSurvivalStats.Hunger / defaultSurvivalStats.Hunger));
+                             }
+                             else
+                             {
+                                 if (statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(false);
+
+                             } */
+                            if (enableStaminaSystem)
+                            {
+                                if (!stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(true);
+                                if (!stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(true);
+                                if (staminaIsChanging)
                                 {
-                                    stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0.5f), 0.15f);
-                                    stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(1, 1, 1, 1), 0.15f);
+                                    if (stamMeter.color != Color.white)
+                                    {
+                                        stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0.5f), 0.15f);
+                                        stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(1, 1, 1, 1), 0.15f);
+                                    }
+                                    stamMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 5, normalStamMeterSizeDelta, (currentStaminaLevel / Stamina));
                                 }
-                                stamMeter.rectTransform.sizeDelta = Vector2.Lerp(Vector2.up * 5, normalStamMeterSizeDelta, (currentStaminaLevel / Stamina));
+                                else
+                                {
+                                    if (stamMeter.color != Color.clear)
+                                    {
+                                        stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0), 0.15f);
+                                        stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(0, 0, 0, 0), 0.15f);
+                                    }
+                                }
                             }
                             else
                             {
-                                if (stamMeter.color != Color.clear)
-                                {
-                                    stamMeterBG.color = Vector4.MoveTowards(stamMeterBG.color, new Vector4(0, 0, 0, 0), 0.15f);
-                                    stamMeter.color = Vector4.MoveTowards(stamMeter.color, new Vector4(0, 0, 0, 0), 0.15f);
-                                }
+                                if (stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(false);
+                                if (stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(false);
                             }
                         }
-                        else
+
+                        if (currentStance == Stances.Standing && !changingStances)
                         {
-                            if (stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(false);
-                            if (stamMeter.gameObject.activeSelf) stamMeter.gameObject.SetActive(false);
+                            internalEyeHeight = standingEyeHeight;
+                        }
+                        #endregion
+
+                        //if(Input.GetKeyDown(KeyCode.Mouse0))
+                        if (!atacando && !cubriendose)
+                        {
+                            #region Movement
+                            if (cameraPerspective == PerspectiveModes._3rdPerson && !atacando)
+                            {
+                                HeadRotDirForInput = Mathf.MoveTowardsAngle(HeadRotDirForInput, headRot.y, bodyCatchupSpeed * (1 + Time.deltaTime));
+                                MovInput_Smoothed = Vector2.MoveTowards(MovInput_Smoothed, MovInput, inputResponseFiltering * (1 + Time.deltaTime));
+                            }
+                            InputDir = cameraPerspective == PerspectiveModes._1stPerson ? Vector3.ClampMagnitude((transform.forward * MovInput.y + transform.right * (viewInputMethods == ViewInputModes.Traditional ? MovInput.x : 0)), 1) : Quaternion.AngleAxis(HeadRotDirForInput, Vector3.up) * (Vector3.ClampMagnitude((Vector3.forward * MovInput_Smoothed.y + Vector3.right * MovInput_Smoothed.x), 1));
+                            GroundMovementSpeedUpdate();
+                            if (canJump && !tengoFacon && !tengoRifle && !tengoBoleadoras && (holdJump ? jumpInput_Momentary : jumpInput_FrameOf)) { Jump(jumpPower); }
+                            #endregion
+                            #region Footstep
+                            CalculateFootstepTriggers();
+                            #endregion
                         }
                     }
 
-                    if (currentStance == Stances.Standing && !changingStances)
-                    {
-                        internalEyeHeight = standingEyeHeight;
-                    }
+
+
+                    #region Stamina system
+                    if (enableStaminaSystem) { CalculateStamina(); }
                     #endregion
 
-                    //if(Input.GetKeyDown(KeyCode.Mouse0))
-                    if (!atacando && !cubriendose)
-                    {
-                        #region Movement
-                        if (cameraPerspective == PerspectiveModes._3rdPerson && !atacando)
-                        {
-                            HeadRotDirForInput = Mathf.MoveTowardsAngle(HeadRotDirForInput, headRot.y, bodyCatchupSpeed * (1 + Time.deltaTime));
-                            MovInput_Smoothed = Vector2.MoveTowards(MovInput_Smoothed, MovInput, inputResponseFiltering * (1 + Time.deltaTime));
-                        }
-                        InputDir = cameraPerspective == PerspectiveModes._1stPerson ? Vector3.ClampMagnitude((transform.forward * MovInput.y + transform.right * (viewInputMethods == ViewInputModes.Traditional ? MovInput.x : 0)), 1) : Quaternion.AngleAxis(HeadRotDirForInput, Vector3.up) * (Vector3.ClampMagnitude((Vector3.forward * MovInput_Smoothed.y + Vector3.right * MovInput_Smoothed.x), 1));
-                        GroundMovementSpeedUpdate();
-                        if (canJump && !tengoFacon && !tengoRifle && !tengoBoleadoras && (holdJump ? jumpInput_Momentary : jumpInput_FrameOf)) { Jump(jumpPower); }
-                        #endregion
-                        #region Footstep
-                        CalculateFootstepTriggers();
-                        #endregion
-                    }
+
+
                 }
-                
-
-
-                #region Stamina system
-                if (enableStaminaSystem) { CalculateStamina(); }
-                #endregion
-
-                
-
+                else
+                {
+                    jumpInput_FrameOf = false;
+                    jumpInput_Momentary = false;
+                }
             }
-            else
-            {
-                jumpInput_FrameOf = false;
-                jumpInput_Momentary = false;
-            }
+            
             #region Animation
             UpdateAnimationTriggers(controllerPaused);
             #endregion
         }
         void FixedUpdate()
         {
-            if (!controllerPaused)
+            if (!controllerPaused && !estaMuerto)
             {
                 if (!tengoBoleadoras)
                 {
@@ -1558,6 +1567,11 @@ namespace SUPERCharacte
                                 {
                                     _3rdPersonCharacterAnimator.SetTrigger(a_lanzar);
                                 }
+                                if(a_isDeath != "" && estaMuerto && !murio)
+                                {
+                                    murio = true;
+                                    _3rdPersonCharacterAnimator.SetTrigger(a_isDeath);
+                                }
 
                             }
                             else
@@ -1646,6 +1660,10 @@ namespace SUPERCharacte
                                 if (a_lanzar != "" && tengoBoleadoras && Input.GetKey(KeyCode.Mouse0) && !controller.enMenuRadial)
                                 {
                                     _3rdPersonCharacterAnimator.SetTrigger(a_lanzar);
+                                }
+                                if (a_isDeath != "" && estaMuerto && !murio)
+                                {
+                                    _3rdPersonCharacterAnimator.SetTrigger(a_isDeath);
                                 }
                             }
 
@@ -2174,6 +2192,8 @@ namespace SUPERCharacte
                 t.a_VelX = EditorGUILayout.TextField(new GUIContent("VelX (Float)", "(Float)"), t.a_VelX);
                 t.a_VelY = EditorGUILayout.TextField(new GUIContent("VelY (Float)", "(Float)"), t.a_VelY);
                 t.a_lanzar = EditorGUILayout.TextField(new GUIContent("LanzarB (Trigger)", "(Trigger"), t.a_lanzar);
+                //t.a_isDeath = EditorGUILayout.TextField(new GUIContent("isDeath (Trigger)", "(Trigger"), t.a_isDeath);
+                t.a_isDeath = EditorGUILayout.TextField(new GUIContent("IsDeath (Bool)", "(Bool) IsDeath"), t.a_isDeath);
                 EditorGUILayout.EndVertical();
             }
             //EditorGUILayout.HelpBox("WIP - This is a work in progress feature and currently very primitive.\n\n No triggers, bools, floats, or ints are set up in the script. To utilize this feature, find 'UpdateAnimationTriggers()' function in this script and set up triggers with the correct string names there. This function gets called by the script whenever a relevant parameter gets updated. (I.e. when 'isVaulting' changes)", MessageType.Info);

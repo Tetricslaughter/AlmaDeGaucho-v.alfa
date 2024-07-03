@@ -1,3 +1,4 @@
+using SUPERCharacte;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public float maxHealth = 100f;
     public float currentHealth;
+    public JuanMoveBehaviour moveBehaviour;
 
     void Start()
     {
@@ -16,6 +18,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
+            moveBehaviour.estaMuerto = true;
             Die();
         }
     }
