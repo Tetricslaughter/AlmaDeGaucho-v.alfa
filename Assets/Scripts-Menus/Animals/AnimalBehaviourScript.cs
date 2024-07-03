@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class AnimalBehaviourScript : MonoBehaviour
+public class AnimalBehaviourScript : EntityBehaviourScript
 {
-    public string animalName;
-    public float health;
-
-    public float speed;
     public int meatAmount;
     public int leatherAmount;
     public GameObject meatPrefab;
     public GameObject leatherPrefab;
+    public NavMeshAgent agent;
 
+    protected override void Start() 
+    {
+        base.Start();
+        agent = GetComponent<NavMeshAgent>();   
+    }
 
-    // Start is called before the first frame update
-    public void TakeDamage(float damage)
+    public override void TakeDamage(float damage)
     {
         health -= damage;
         if (health <= 0)
@@ -26,10 +27,17 @@ public class AnimalBehaviourScript : MonoBehaviour
 
     }
 
-    private void Die()
+    protected override void Die()
     {
         DropLoot();
-        Destroy(gameObject);
+        base.Die();
+    }
+    protected virtual void Idle()
+    {
+    }
+
+    protected virtual void Run()
+    {
     }
 
     private void DropLoot()
@@ -37,17 +45,17 @@ public class AnimalBehaviourScript : MonoBehaviour
         if (meatPrefab != null)
         {
             GameObject meat = Instantiate(meatPrefab, transform.position, Quaternion.identity);
-            //LootScript meatLoot = meat.GetComponent<LootScript>();
-            //meatLoot.amount = meatAmount;
-            //meatLoot.lootName = "Meats";
+            LootScript meatLoot = meat.GetComponent<LootScript>();
+            meatLoot.amount = meatAmount;
+            meatLoot.lootName = "Carne";
         }
 
         if (leatherPrefab != null)
         {
             GameObject leather = Instantiate(leatherPrefab, transform.position, Quaternion.identity);
-            //LootScript leatherLoot = leather.GetComponent<LootScript>();
-            //leatherLoot.amount = leatherAmount;
-            //leatherLoot.lootName = "Leathers";
+            LootScript leatherLoot = leather.GetComponent<LootScript>();
+            leatherLoot.amount = leatherAmount;
+            leatherLoot.lootName = "Cuero";
         }
     }
 }

@@ -5,16 +5,15 @@ using UnityEngine;
 public class DamageScript : MonoBehaviour
 {
     public float damage;
+
     // Start is called before the first frame update
     private void OnCollisionEnter(Collision collision)
     {
-        AnimalBehaviourScript animal = collision.gameObject.GetComponent<AnimalBehaviourScript>();
-        if (animal != null) 
+        // Intenta obtener el componente EntityBehaviourScript o cualquiera de sus derivados
+        EntityBehaviourScript entity = collision.gameObject.GetComponent<EntityBehaviourScript>();
+        if (entity != null)
         {
-            animal.TakeDamage(damage);
+            entity.TakeDamage(damage);
         }
     }
-
-    // Update is called once per frame
-
 }

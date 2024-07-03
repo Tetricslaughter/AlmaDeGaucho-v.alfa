@@ -3,29 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Niandus : AnimalBehaviourScript
+public class NiandusBehaviourScript : AnimalBehaviourScript
 {
-    public NavMeshAgent agent;
-    private Transform player;
-    public float detectionRadius = 20f;
-    public float fleeDistance = 10f; // Distancia a la que huirá el Niandus
-    public float patrolRadius = 10f; // Radio de patrullaje
-    private Vector3 initialPosition; // Posición inicial para el patrullaje
+    public float fleeDistance = 10f;
+    public Transform player;
+    private Animator animator;
 
-    private bool isFleeing = false; // Indica si el Niandus está huyendo actualmente
-
-    // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
-        animalName = "Niandus";
+        base.Start();
+        animator = GetComponent<Animator>();
+
+        entityName = "Niandus";
         health = 100f;
         speed = 5f;
         meatAmount = 10;
         leatherAmount = 5;
-        // Aquí deberías asignar los prefabs de meatPrefab y leatherPrefab según tu diseño
 
-        agent = GetComponent<NavMeshAgent>();
-
+        //comprobacion de Player
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
         {
@@ -36,98 +31,60 @@ public class Niandus : AnimalBehaviourScript
             Debug.LogError("Player not found!");
         }
 
-        initialPosition = transform.position;
-        StartCoroutine("PatrolRoutine"); // Iniciar rutina de patrullaje
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (player == null || agent == null)
-        {
-            return;
-        }
+        float distanceToPlayer = Vector3.Distance(player.position, transform.position);
+        float distanceToInitial = Vector3.Distance(initialPosition, transform.position);
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-        // Si el jugador está dentro del radio de detección y el Niandus no está actualmente huyendo, huir
-        if (distanceToPlayer < detectionRadius && !isFleeing)
-        {
-            isFleeing = true;
-            Flee();
-        }
-        // Si el jugador está fuera del radio de detección, dejar de huir y patrullar
-        else if (distanceToPlayer >= detectionRadius && isFleeing)
-        {
-            isFleeing = false;
-        }
-
-        // Si está huyendo y no ha escapado completamente del jugador, continuar huyendo
-        if (isFleeing && distanceToPlayer < detectionRadius)
+        if (distanceToPlayer < fleeDistance)
         {
             Flee();
+            //Debug.Log("En huida");
         }
-        // Si no está huyendo y no está patrullando, iniciar patrullaje
-        else if (!isFleeing && !agent.pathPending && (agent.remainingDistance <= agent.stoppingDistance))
+        else if (distanceToInitial > 1f)
         {
-            Patrol();
+            ReturnToInitialPosition();
+            //Debug.Log("De regreso al punto inicial");
+        }
+        else
+        {
+            //Debug.Log("En posicion de idle o reposo");
+            //Idle();
         }
     }
+
+    /*protected override void Idle()
+    {
+        animator.SetBool("IsRunning", false);
+        animator.SetBool("iddle", true);
+
+    }*/
+
+    /*protected override void Run()
+    {
+        animator.SetBool("idle", false);
+        animator.SetBool("IsRunning", true);
+    }*/
 
     private void Flee()
     {
-        Vector3 fleeDirection = (transform.position - player.position).normalized;
-        Vector3 newGoal = transform.position + fleeDirection * fleeDistance; // Punto de huida a 'fleeDistance' unidades de distancia del jugador
+        //Run();
+        Vector3 direction = (transform.position - player.position).normalized;
+        Vector3 fleePosition = transform.position + direction * fleeDistance;
+        if (fleePosition != null)
+        {
+            agent.SetDestination(fleePosition);
+            Debug.Log("De camino a destino");
 
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(newGoal, out hit, fleeDistance, NavMesh.AllAreas))
-        {
-            agent.SetDestination(hit.position);
         }
-        else
-        {
-            Debug.LogWarning("No se pudo encontrar un punto de huida válido.");
-        }
+        
     }
 
-    private void Patrol()
+    private void ReturnToInitialPosition()
     {
-        // Genera un nuevo destino aleatorio dentro del radio de patrullaje
-        Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
-        randomDirection += initialPosition;
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(randomDirection, out hit, patrolRadius, NavMesh.AllAreas))
-        {
-            agent.SetDestination(hit.position);
-        }
-        else
-        {
-            Debug.LogWarning("No se pudo encontrar un punto de patrullaje válido.");
-        }
-    }
-
-    IEnumerator PatrolRoutine()
-    {
-        while (true)
-        {
-            // Espera aleatoria entre 5 y 10 segundos antes de cambiar de destino de patrullaje
-            yield return new WaitForSeconds(Random.Range(5f, 10f));
-
-            // Si no está huyendo, continuar patrullando
-            if (!isFleeing)
-            {
-                Patrol();
-            }
-        }
-    }
-
-    // Draw the detection radius in the scene view
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRadius);
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(initialPosition, patrolRadius);
+        //Run();
+        agent.SetDestination(initialPosition);
     }
 }
