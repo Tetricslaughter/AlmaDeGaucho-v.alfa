@@ -1,19 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DamageScript : MonoBehaviour
 {
     public float damage;
-
-    // Start is called before the first frame update
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        // Intenta obtener el componente EntityBehaviourScript o cualquiera de sus derivados
-        EntityBehaviourScript entity = collision.gameObject.GetComponent<EntityBehaviourScript>();
-        if (entity != null)
+
+        if (other.CompareTag("Player"))
         {
-            entity.TakeDamage(damage);
+            PlayerHealth health  = other.GetComponent<PlayerHealth>();
+            health.TakeDamage(damage);
         }
+
     }
 }
