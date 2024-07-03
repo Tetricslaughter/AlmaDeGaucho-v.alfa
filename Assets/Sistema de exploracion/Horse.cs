@@ -5,6 +5,7 @@ using UnityEngine;
 public class Horse : MonoBehaviour
 {
     public Transform saddlePosition; // Posición en la que el jugador se sentará
+    public HorseMovement HorseMovement;
     // Start is called before the first frame update
     void Start()
     {

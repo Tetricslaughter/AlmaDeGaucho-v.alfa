@@ -7,7 +7,9 @@ public class HorseMovement : MonoBehaviour
     public float mouseHorizontal = 3f;
     public float mouseVertical = 2f;
 
-    //public Animator anim;
+    public Animator anim;
+
+    public Rigidbody rb;
 
     float h_mouse;
     float v_mouse;
@@ -18,7 +20,11 @@ public class HorseMovement : MonoBehaviour
     public float cooldownDuration = 10.0f; // Tiempo que debe caminar antes de poder correr de nuevo
     private float runTimer;
     private float cooldownTimer;
-    private bool isRunning;
+    public bool isRunning;
+    public bool isWalk;
+    public Vector3 vel;
+    public float VelXZ;
+
 
     float h;
     float v;
@@ -29,12 +35,20 @@ public class HorseMovement : MonoBehaviour
         runTimer = 0.0f;
         cooldownTimer = 0.0f;
         isRunning = false;
+        anim = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Move();
+        //vel = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        //VelXZ = vel.magnitude;
+        //anim.SetFloat("VelXZ", rb.velocity.z);
+        //Debug.Log(rb.velocity.z);
+        //anim.SetBool("isRun", isRunning);
+        //anim.SetBool("isWalk", isWalk);
     }
 
     void Move()
@@ -48,19 +62,40 @@ public class HorseMovement : MonoBehaviour
         h = Input.GetAxis("Horizontal");
         v = Input.GetAxis("Vertical");
 
-        Vector3 direction = new Vector3(h, 0, v);
+        //Vector3 direction = new Vector3(h, 0, v);
+        Vector3 direction = new Vector3(0, 0, v);
 
-        if (Input.GetButton("Fire3") && cooldownTimer <= 0)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             isRunning = true;
-            runTimer = runDuration;
-            cooldownTimer = cooldownDuration;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            isRunning = false;
+        }
+        if (!isRunning)
+        {
+            transform.Translate(direction * moveSpeed * Time.deltaTime);
+            anim.SetFloat("Vel", v * moveSpeed);
+        }else
+        {
+            transform.Translate(direction * runSpeed * Time.deltaTime);
+            anim.SetFloat("Vel", v * runSpeed);
+        }
+        /*if (Input.GetButton("Fire3") && cooldownTimer <= 0)
+        {
+            isRunning = true;
+            isWalk = false;
+            //runTimer = runDuration;
+            //cooldownTimer = cooldownDuration;
 
         }
         if (isRunning)
         {
             transform.Translate(direction * runSpeed * Time.deltaTime);
-            runTimer -= Time.deltaTime;
+            //runTimer -= Time.deltaTime;
+            anim.SetFloat("Vel", runSpeed);
+            isWalk = false;
 
             if (runTimer <= 0)
             {
@@ -69,12 +104,15 @@ public class HorseMovement : MonoBehaviour
         }    
         else
         {
+            //isRunning = false;
+            isWalk = true;
             transform.Translate(direction * moveSpeed * Time.deltaTime);
-            cooldownTimer -= Time.deltaTime;
+            anim.SetFloat("Vel", moveSpeed);
+            //cooldownTimer -= Time.deltaTime;
             //anim.SetBool("walk", h != 0 || v != 0);
             //anim.SetBool("walk", true);
-        }
-            
-        
+        }*/
+
+
     }
 }

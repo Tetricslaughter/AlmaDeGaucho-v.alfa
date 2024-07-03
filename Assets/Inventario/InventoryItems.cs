@@ -21,11 +21,14 @@ public class InventoryItems : MonoBehaviour
     public Text amountCueText;
     public int amountCh;
     public Text amountChText;
+    public GameObject panelInventario;
+    public bool inventarioAbierto;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        inventarioAbierto = false;
         amountFac = 0;
         amountBol = 0;
         amountMon = 15;
@@ -46,6 +49,39 @@ public class InventoryItems : MonoBehaviour
         amountYerText.text = "x " + amountYer.ToString();
         amountCueText.text = "x " + amountCue.ToString();
         amountChText.text = "x " + amountCh.ToString();
+        AbrirInventario();
+    }
+
+    void AbrirInventario()
+    {
+        if (Input.GetKey(KeyCode.I) && !inventarioAbierto)
+        {
+            inventarioAbierto = true;
+            panelInventario.SetActive(true);
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+
+        }
+        else if(Input.GetKey(KeyCode.I) && inventarioAbierto) {
+        
+            inventarioAbierto = false;
+            panelInventario.SetActive(false);
+        }
+        /*if (Input.GetKeyDown(KeyCode.I))
+        {
+            panelInventario.SetActive(true);
+        }
+        if (Input.GetKeyUp(KeyCode.I))
+        {
+            panelInventario.SetActive(false);
+        }*/
+        
+    }
+
+    public void DesactivarCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void OnTriggerEnter(Collider other) 
