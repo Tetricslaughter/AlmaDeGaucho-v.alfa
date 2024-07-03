@@ -12,6 +12,7 @@ public class IndianBehaviourScript : EnemyBehaviourScript
     public float attackDamage = 10f; // daño
     public float attackCooldown = 1f; // tiempo de espera de ataques
     public Animator animator;
+    public bool ataco;
 
     private bool isAttacking = false;
     private float lastAttackTime;
@@ -29,7 +30,8 @@ public class IndianBehaviourScript : EnemyBehaviourScript
         {
             Debug.LogError("Player not found!");
         }
-        animator = GetComponent<Animator>();    
+        animator = GetComponent<Animator>(); 
+        ataco = false;
     }
 
     // Update is called once per frame
@@ -43,21 +45,22 @@ public class IndianBehaviourScript : EnemyBehaviourScript
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         // dentro del radio de detección se acerca
-        if (distanceToPlayer < detectionRadius && distanceToPlayer > stopDistance)
+        if (distanceToPlayer < detectionRadius && distanceToPlayer > stopDistance && !ataco)
         {
-            isAttacking = false; 
+            //isAttacking = false; 
             animator.SetBool("isMove", true);
             MoveTowardsPlayer();
         }
         else if (distanceToPlayer <= stopDistance)// se detiene a cierta distancia del jugador y ataca
         {
             agent.isStopped = true;
-            if (distanceToPlayer <= attackRadius && !isAttacking)
+            if (distanceToPlayer <= attackRadius && !ataco/*&& !isAttacking*/)
             {
+                ataco = true;
                 isAttacking = true;
                 animator.SetBool("isMove", false);
-                //animator.SetTrigger("atack");
-                StartCoroutine(AttackPlayer());
+                animator.SetTrigger("atack");
+                //StartCoroutine(AttackPlayer());
             }
         }
         else
@@ -94,6 +97,10 @@ public class IndianBehaviourScript : EnemyBehaviourScript
             }
             yield return null;
         }
+    }
+    public void DejadeAtacarIndio()
+    {
+        ataco = false;
     }
 
     private void OnDrawGizmosSelected()
