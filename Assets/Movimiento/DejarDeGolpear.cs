@@ -9,6 +9,9 @@ public class DejarDeGolpear : MonoBehaviour
     public Rigidbody rb;
     public bool avanzaSolo;
     public float impulsoEsquivar = 10f;
+    public BoxCollider faconCollider;
+    //public JuanMoveBehaviour moveBehaviour;
+    public BoxCollider ponchoCollider;
 
     // Start is called before the first frame update
     void Start()
@@ -41,5 +44,39 @@ public class DejarDeGolpear : MonoBehaviour
     void DejaDeAvanzar()
     {
         avanzaSolo=false;
+    }
+
+    public void DesactivarColliderFacon()
+    {
+        if (faconCollider != null)
+        {
+            faconCollider.enabled = false;
+        }
+        if (ponchoCollider != null)
+        {
+            ponchoCollider.enabled = false;
+        }
+        //punioBoxCollider.enabled = false;
+    }
+
+    //Activa los colliders del puño y de la espada
+    public void ActivarColliderFacon()
+    {
+        if (script.tengoFacon)
+        {
+            if (faconCollider != null)
+            {
+                faconCollider.enabled = true;
+            }
+            if (ponchoCollider != null)
+            {
+                ponchoCollider.enabled = true;
+            }
+        }
+        //else
+        //{
+        //    punioBoxCollider.enabled = true;
+        //}
+
     }
 }
