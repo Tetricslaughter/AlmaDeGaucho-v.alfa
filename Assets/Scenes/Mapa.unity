@@ -25866,6 +25866,7 @@ MonoBehaviour:
   attackDamage: 10
   attackCooldown: 1
   animator: {fileID: 568958169}
+  ataco: 0
 --- !u!95 &568958169
 Animator:
   serializedVersion: 5
@@ -48513,6 +48514,18 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 1057289541586810983, guid: 09ef06b29d533eb4791258b83ee6e42d, type: 3}
+      propertyPath: faconCollider
+      value: 
+      objectReference: {fileID: 1053904030}
+    - target: {fileID: 1057289541586810983, guid: 09ef06b29d533eb4791258b83ee6e42d, type: 3}
+      propertyPath: moveBehaviour
+      value: 
+      objectReference: {fileID: 1431012361}
+    - target: {fileID: 1057289541586810983, guid: 09ef06b29d533eb4791258b83ee6e42d, type: 3}
+      propertyPath: ponchoCollider
+      value: 
+      objectReference: {fileID: 1053904031}
     - target: {fileID: 1089638699127525584, guid: 09ef06b29d533eb4791258b83ee6e42d, type: 3}
       propertyPath: m_Layer
       value: 6
@@ -48997,6 +49010,16 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1431012359}
   m_SourcePrefab: {fileID: 100100000, guid: 09ef06b29d533eb4791258b83ee6e42d, type: 3}
+--- !u!65 &1053904030 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 1540417813717975609, guid: 09ef06b29d533eb4791258b83ee6e42d, type: 3}
+  m_PrefabInstance: {fileID: 1053904029}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1053904031 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 1302386762467010597, guid: 09ef06b29d533eb4791258b83ee6e42d, type: 3}
+  m_PrefabInstance: {fileID: 1053904029}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1056549975
 PrefabInstance:
   m_ObjectHideFlags: 0
