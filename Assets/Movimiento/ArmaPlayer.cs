@@ -11,11 +11,16 @@ public class ArmaPlayer : MonoBehaviour
 
     public GameObject poncho;
     public BoxCollider ponchoCollider;
+
+    public GameObject rifle;
+
+    public GameObject boleadoras;
     //private bool tengoArma;
     private bool armaEquipada;
     public bool pressEquiparFacon;
     public bool pressManos;
     public bool pressRifle;
+    public bool pressBoleadoras;
     //private Animator animator;
 
     
@@ -24,11 +29,12 @@ public class ArmaPlayer : MonoBehaviour
     {
         moveBehaviour = GetComponent<JuanMoveBehaviour>();
         //animator = GetComponent<Animator>();
-        DesactivarColliderArmas();//se desactivan los boxColliders del puño y de la espada
+        DesactivarColliderFacon();//se desactivan los boxColliders del puño y de la espada
         //tengoArma = false;      //al iniciar la escena el player no tiene un arma
         armaEquipada = false;   //por lo tanto tampoco la tendria equipada
         pressEquiparFacon = false;
         pressManos = false;
+        pressBoleadoras = false;
     }
 
     // Update is called once per frame
@@ -37,17 +43,26 @@ public class ArmaPlayer : MonoBehaviour
         if (pressEquiparFacon)
         {
             pressEquiparFacon= false;
-            ActivateArma();
+            ActivarFacon();
         }
         if (pressManos)
         {
             pressManos= false;
-            DesactivarArma();
+            DesactivarArmas();
         }
         if (pressRifle)
         {
             pressRifle= false;
-            moveBehaviour.tengoRifle =true;
+            ActivarRifle();
+        }
+        if (pressBoleadoras)
+        {
+            pressBoleadoras= false;
+            moveBehaviour.playerCamera.transform.position = moveBehaviour.posCamera.transform.position;
+            moveBehaviour.playerCamera.transform.rotation = moveBehaviour.posCamera.transform.rotation;
+            
+            //moveBehaviour.playerCamera.transform.position = new Vector3(moveBehaviour.p_Rigidbody.position.x + 0.7f,moveBehaviour.p_Rigidbody.position.y + 1f,moveBehaviour.p_Rigidbody.position.z - 2f);
+            ActivarBoleadoras();
         }
 
         //este if sirve para equiparse y desaquiparse el arma cuando se apreta la tecla especificada
@@ -63,7 +78,7 @@ public class ArmaPlayer : MonoBehaviour
             }
         }
     }
-    public void DesactivarColliderArmas()
+    public void DesactivarColliderFacon()
     {
         if (faconCollider != null)
         {
@@ -77,7 +92,7 @@ public class ArmaPlayer : MonoBehaviour
     }
 
     //Activa los colliders del puño y de la espada
-    public void ActivarColliderArmas()
+    public void ActivarColliderFacon()
     {
         if (moveBehaviour.tengoFacon)
         {
@@ -97,24 +112,53 @@ public class ArmaPlayer : MonoBehaviour
 
     }
 
-    public void ActivateArma()
+    public void ActivarFacon()
     {
         //tengoArma = true;
         facon.SetActive(true);   //activa el arma del player
         poncho.SetActive(true);
+        rifle.SetActive(false);
+        boleadoras.SetActive(false);
         armaEquipada = true;
         //animator.SetBool("armaEquipada", true);
         moveBehaviour.tengoFacon = true; //cambia el estado de una variable correspondiente al Script PlayerBehaviour
         moveBehaviour.tengoRifle=false;
+        moveBehaviour.tengoBoleadoras = false;
     }
 
-    public void DesactivarArma()
+    public void DesactivarArmas()
     {
+        rifle.SetActive(false);
         facon.SetActive(false);              //desactiva el arma del player
         poncho.SetActive(false );
+        boleadoras.SetActive(false);
         armaEquipada = false;
         //animator.SetBool("armaEquipada", false);
         moveBehaviour.tengoFacon = false;
         moveBehaviour.tengoRifle = false;
+        moveBehaviour.tengoBoleadoras = false;
     }
+
+    public void ActivarRifle()
+    {
+        rifle.SetActive(true);
+        facon.SetActive(false);              //desactiva el arma del player
+        poncho.SetActive(false);
+        boleadoras.SetActive(false);
+        moveBehaviour.tengoRifle = true;
+        moveBehaviour.tengoFacon = false;
+        moveBehaviour.tengoBoleadoras = false;
+    }
+
+    public void ActivarBoleadoras()
+    {
+        boleadoras.SetActive(true);
+        rifle.SetActive(false);
+        facon.SetActive(false);              //desactiva el arma del player
+        poncho.SetActive(false);
+        moveBehaviour.tengoBoleadoras=true;
+        moveBehaviour.tengoRifle = false;
+        moveBehaviour.tengoFacon = false;
+    }
+
 }

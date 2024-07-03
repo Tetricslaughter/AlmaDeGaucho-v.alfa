@@ -83,6 +83,9 @@ public class RingMenu : MonoBehaviour
             }else if (ringBools[activeElement].rifle)
             {
                 script.pressRifle=true;
+            }else if (ringBools[activeElement].boleadoras)
+            {
+                script.pressBoleadoras=true;
             }
             //playerAnimator.SetTrigger(ringAnimations[activeElement].name);
             gameObject.SetActive(false);
