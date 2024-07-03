@@ -10,7 +10,7 @@ public class LootScript : MonoBehaviour
     public void Collect()
     {
         Debug.Log($"Collected {amount} of {lootName}");
-        //lógica para agregar el loot al inventario del jugador
+        //lógica inventario del jugador
         Destroy(gameObject);
     }
 }
