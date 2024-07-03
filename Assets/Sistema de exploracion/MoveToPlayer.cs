@@ -7,7 +7,7 @@ public class MoveToPlayer : MonoBehaviour
     public Transform player; // Referencia al jugador
     public float speed = 3f; // Velocidad de movimiento
     private bool moveTowardsPlayer = false; // Bandera para iniciar el movimiento
-    public float stopDistance = 4f; // Distancia a la cual el objeto se detendra frente al jugador
+    public float stopDistance = 6f; // Distancia a la cual el objeto se detendra frente al jugador
     // Start is called before the first frame update
     void Start()
     {
