@@ -11,9 +11,11 @@ public class TraderBehaviour : MonoBehaviour
     public GameObject panelBuy;
     private InventoryItems inventoryItems;
     public GameObject panelSell;
+    public bool enTienda;
     // Start is called before the first frame update
     void Start()
     {
+        enTienda = false;
         buy = false;
         inventoryItems = player.GetComponent<InventoryItems>();
     }
@@ -22,7 +24,29 @@ public class TraderBehaviour : MonoBehaviour
     void Update()
     {
         distance = Vector3.Distance(player.transform.position, transform.position);
-        panel.SetActive(distance <= 3.0f && !buy);
+        if(distance <= 3.0f && !buy)
+        {
+            enTienda=true;
+            panel.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            enTienda = false;
+            panel.SetActive(false);
+
+        }
+
+        if(enTienda && Input.GetKeyDown(KeyCode.C))
+        {
+            BuyItems();
+        }
+        if (enTienda && Input.GetKeyDown(KeyCode.V))
+        {
+            SellItems();
+        }
+
     }
 
     public void BuyItems()

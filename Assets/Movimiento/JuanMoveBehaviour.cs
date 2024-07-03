@@ -522,7 +522,7 @@ namespace SUPERCharacte
                             MovePlayer(InputDir, currentGroundSpeed);
                             velXZ = new Vector3(p_Rigidbody.velocity.x, 0, p_Rigidbody.velocity.z);
 
-                            Debug.Log(velXZ.magnitude);
+                            //Debug.Log(velXZ.magnitude);
 
                             // if (isSliding) { Slide(); }
                         }

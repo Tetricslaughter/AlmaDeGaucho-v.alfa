@@ -1,3 +1,4 @@
+using SUPERCharacte;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,11 +7,16 @@ public class Player : MonoBehaviour
 {
     private Horse currentHorse;
     private bool canMount = false;
-    private PlayerMovement playerMovement;
+    private JuanMoveBehaviour playerMovement;
+    private Rigidbody rb;
+    public Animator animator;
+    public bool b;
+    //public bool 
     // Start is called before the first frame update
     void Start()
     {
-        playerMovement = GetComponent<PlayerMovement>();
+        playerMovement = GetComponent<JuanMoveBehaviour>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -38,11 +44,15 @@ public class Player : MonoBehaviour
     {
         if (currentHorse != null)
         {
+            transform.rotation = currentHorse.saddlePosition.rotation;
             transform.position = currentHorse.saddlePosition.position;
-            transform.SetParent(currentHorse.transform);
+            transform.SetParent(currentHorse.HorseMovement.transform);
             //transform.localScale = originalScale; // Asegura que la escala se mantenga
             playerMovement.enabled = false;//  Desactivar el control del jugador
-            currentHorse.GetComponent<HorseMovement>().enabled = true; // Activar el control del caballo
+            rb.useGravity = false;
+            animator.SetBool("Sentado", true);
+            currentHorse.HorseMovement.enabled = true;
+            //currentHorse.GetComponent<HorseMovement>().enabled = true; // Activar el control del caballo
             
         }
         
@@ -52,10 +62,13 @@ public class Player : MonoBehaviour
     {
         if (currentHorse != null)
         {
+            animator.SetBool("Sentado", false);
             transform.SetParent(null);
             //transform.localScale = originalScale; // Asegura que la escala se mantenga
             playerMovement.enabled = true;//  Reactivar el control del jugador
-            currentHorse.GetComponent<HorseMovement>().enabled = false; // Desactivar el control del caballo
+            rb.useGravity = true;
+            currentHorse.HorseMovement.enabled = true;
+            //currentHorse.GetComponent<HorseMovement>().enabled = false; // Desactivar el control del caballo
             currentHorse = null;
         }
     }
