@@ -14916,6 +14916,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7717078241227908664, guid: f62147e112b5c7747a8572f5a93433fa, type: 3}
+      propertyPath: distX
+      value: -0.91
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717078241227908664, guid: f62147e112b5c7747a8572f5a93433fa, type: 3}
+      propertyPath: distY
+      value: -1.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717078241227908664, guid: f62147e112b5c7747a8572f5a93433fa, type: 3}
+      propertyPath: distZ
+      value: 0.62
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717078241227908664, guid: f62147e112b5c7747a8572f5a93433fa, type: 3}
+      propertyPath: rango
+      value: 2.43
+      objectReference: {fileID: 0}
+    - target: {fileID: 7717078241227908664, guid: f62147e112b5c7747a8572f5a93433fa, type: 3}
       propertyPath: playerObj
       value: 
       objectReference: {fileID: 1431012332}
