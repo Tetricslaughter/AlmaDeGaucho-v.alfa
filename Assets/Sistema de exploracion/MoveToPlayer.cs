@@ -8,10 +8,11 @@ public class MoveToPlayer : MonoBehaviour
     public float speed = 3f; // Velocidad de movimiento
     private bool moveTowardsPlayer = false; // Bandera para iniciar el movimiento
     public float stopDistance = 6f; // Distancia a la cual el objeto se detendra frente al jugador
+    public bool sePresiono;
     // Start is called before the first frame update
     void Start()
     {
-        
+        sePresiono = false;
     }
 
     // Update is called once per frame
@@ -20,7 +21,17 @@ public class MoveToPlayer : MonoBehaviour
         // Detectar si se presiona el boton "H"
         if (Input.GetKeyDown(KeyCode.H))
         {
-            moveTowardsPlayer = true; // Activar el movimiento
+            if (!sePresiono)
+            {
+                moveTowardsPlayer = true; // Activar el movimiento
+                sePresiono = true;
+            }
+            else
+            {
+                moveTowardsPlayer = false; // Desactivar el movimiento
+                sePresiono = false ;
+            }
+            
         }
 
         // Si la bandera esta activada, mover el objeto hacia el jugador
@@ -41,6 +52,7 @@ public class MoveToPlayer : MonoBehaviour
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f && Quaternion.Angle(transform.rotation, targetRotation) < 1f)
             {
                 moveTowardsPlayer = false; // Desactivar el movimiento
+                sePresiono = false;
             }
         }
         
