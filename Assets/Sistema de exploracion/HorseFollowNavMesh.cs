@@ -6,18 +6,21 @@ using UnityEngine.AI;
 public class HorseFollowNavMesh : MonoBehaviour
 {
     public Transform player; // Referencia al jugador
-    public float stopDistance = 2f; // Distancia mínima para detenerse
+    public float stopDistance = 4f; // Distancia mínima para detenerse
     public float maxDistance = 20f; // Distancia máxima para correr
-    public float walkSpeed = 3f; // Velocidad caminando
+    public float walkSpeed = 2f; // Velocidad caminando
     public float trotSpeed = 6f; // Velocidad trotando
     public float runSpeed = 12f; // Velocidad corriendo
 
     private NavMeshAgent agent;
     private bool isFollowing = false;
 
+    private Animator animator;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>(); // Obtén el componente NavMeshAgent
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -34,7 +37,16 @@ public class HorseFollowNavMesh : MonoBehaviour
         else
         {
             agent.isStopped = true; // Detener el movimiento si no está siguiendo
+
         }
+
+        if (agent.isStopped) 
+        {
+            agent.speed = 0;
+        }
+        animator.SetFloat("Vel", agent.speed);
+        //Debug.Log("Velocidad agente: " + agent.speed);
+        
     }
 
     void FollowPlayerWithNavMesh()
