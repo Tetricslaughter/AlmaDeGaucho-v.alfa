@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using Unity.VisualScripting;
+using CamaraParaTerceraPersona;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -26,7 +28,8 @@ namespace SUPERCharacte
     {
         #region Variables
         public Controller controller;
-        public GameObject posCamera;
+        private CameraPro cameraPro;
+        //public GameObject posCamera; //Borrar
         public bool cubriendose;
         public bool atacando;
         public bool tengoFacon;
@@ -45,15 +48,16 @@ namespace SUPERCharacte
         public float vertical;
         #endregion
 
-        #region Camera Settings
-        [Header("Camera Settings")]
+        #region Camera Setting
+        /*[Header("Camera Settings")]
         //
         //Public
         //
         //Both
         public Camera playerCamera;
-        public bool enableCameraControl = true, lockAndHideMouse = true, autoGenerateCrosshair = true, showCrosshairIn3rdPerson = false, drawPrimitiveUI = false;
-        public Sprite crosshairSprite;
+        public bool enableCameraControl = true, lockAndHideMouse = true, drawPrimitiveUI = false;
+        //public bool enableCameraControl = true, lockAndHideMouse = true, autoGenerateCrosshair = true, showCrosshairIn3rdPerson = false, drawPrimitiveUI = false;
+        //public Sprite crosshairSprite;
         public PerspectiveModes cameraPerspective = PerspectiveModes._3rdPerson;
         //use mouse wheel to switch modes. (too close will set it to fps mode and attempting to zoom out from fps will switch to tps mode)
         public bool automaticallySwitchPerspective = true;
@@ -63,7 +67,7 @@ namespace SUPERCharacte
         public KeyCode perspectiveSwitchingKey_L = KeyCode.None;
 #endif*/
 
-        public MouseInputInversionModes mouseInputInversion;
+     /*   public MouseInputInversionModes mouseInputInversion;
         public float Sensitivity = 8;
         public float rotationWeight = 4;
         public float verticalRotationRange = 170.0f;
@@ -95,7 +99,7 @@ namespace SUPERCharacte
         bool isInFirstPerson, isInThirdPerson, perspecTog;
         bool setInitialRot = true;
         Vector3 initialRot;
-        Image crosshairImg;
+        //Image crosshairImg;
         Image stamMeter, stamMeterBG;
         Image statsPanel, statsPanelBG;
         Image HealthMeter, HydrationMeter, HungerMeter;
@@ -111,7 +115,7 @@ namespace SUPERCharacte
         Quaternion quatHeadRot;
         Ray cameraObstCheck;
         RaycastHit cameraObstResult;
-        [Space(20)]
+        [Space(20)]*/
         #endregion
 
         #region Movement
@@ -164,17 +168,17 @@ namespace SUPERCharacte
         public GroundInfo currentGroundInfo = new GroundInfo();
         float standingHeight;
         float currentGroundSpeed;
-        Vector3 InputDir;
+        public Vector3 InputDir;
         float HeadRotDirForInput;
         Vector2 MovInput;
         Vector2 MovInput_Smoothed;
         Vector2 _2DVelocity;
         float _2DVelocityMag, speedToVelocityRatio;
         PhysicMaterial _ZeroFriction, _MaxFriction;
-        CapsuleCollider capsule;
+        public CapsuleCollider capsule;
         public Rigidbody p_Rigidbody;
         bool crouchInput_Momentary, crouchInput_FrameOf, sprintInput_FrameOf, sprintInput_Momentary, slideInput_FrameOf, slideInput_Momentary;
-        bool changingStances = false;
+        public bool changingStances = false;
 
         //Slope Affectors
 
@@ -195,7 +199,7 @@ namespace SUPERCharacte
         [Range(0.0f, 250.0f)] public float Stamina = 50.0f, currentStaminaLevel = 0, s_minimumStaminaToSprint = 5.0f, s_depletionSpeed = 2.0f, s_regenerationSpeed = 1.2f, s_JumpStaminaDepletion = 5.0f, s_FacaStaminaDepletion = 2.0f;
 
         //Internal
-        bool staminaIsChanging;
+        public bool staminaIsChanging;
         bool ignoreStamina = false;
         #endregion
 
@@ -239,7 +243,7 @@ namespace SUPERCharacte
         #endregion
         void Start()
         {
-
+            cameraPro = GetComponent<CameraPro>();
             tengoFacon = false;
             tengoRifle = false;
             tengoBoleadoras = false;
@@ -250,7 +254,7 @@ namespace SUPERCharacte
 
 
             #region Camera
-            maxCameraDistInternal = maxCameraDistance;
+            /*maxCameraDistInternal = maxCameraDistance;
             initialCameraFOV = playerCamera.fieldOfView;
             internalEyeHeight = standingEyeHeight;
             if (lockAndHideMouse)
@@ -259,7 +263,7 @@ namespace SUPERCharacte
                 Cursor.visible = false;
             }
 
-            if (autoGenerateCrosshair || drawPrimitiveUI)
+            if (/*autoGenerateCrosshair || *//*drawPrimitiveUI)
             {
                 Canvas canvas = playerCamera.gameObject.GetComponentInChildren<Canvas>();
                 if (canvas == null) { canvas = new GameObject("AutoCrosshair").AddComponent<Canvas>(); }
@@ -268,7 +272,7 @@ namespace SUPERCharacte
                 canvas.pixelPerfect = true;
                 canvas.transform.SetParent(playerCamera.transform);
                 canvas.transform.position = Vector3.zero;
-                if (autoGenerateCrosshair && crosshairSprite)
+                /*if (autoGenerateCrosshair && crosshairSprite)
                 {
                     crosshairImg = new GameObject("Crosshair").AddComponent<Image>();
                     crosshairImg.sprite = crosshairSprite;
@@ -276,7 +280,7 @@ namespace SUPERCharacte
                     crosshairImg.transform.SetParent(canvas.transform);
                     crosshairImg.transform.position = Vector3.zero;
                     crosshairImg.raycastTarget = false;
-                }
+                }*//*
                 if (drawPrimitiveUI)
                 {
                     //Stam Meter BG
@@ -300,7 +304,7 @@ namespace SUPERCharacte
 
                 }
             }
-            initialRot = transform.localEulerAngles;
+            initialRot = transform.localEulerAngles;*/
             #endregion
 
             #region Movement
@@ -368,9 +372,9 @@ namespace SUPERCharacte
                                 MovInput.y = Keyboard.current.wKey.isPressed ? 1 : Keyboard.current.sKey.isPressed ? -1 : 0;
                     #else */
                     //camera
-                    MouseXY.x = Input.GetAxis("Mouse Y");
-                    MouseXY.y = Input.GetAxis("Mouse X");
-                    mouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
+                    //MouseXY.x = Input.GetAxis("Mouse Y");
+                    //MouseXY.y = Input.GetAxis("Mouse X");
+                    //mouseScrollWheel = Input.GetAxis("Mouse ScrollWheel");
                     //perspecTog = Input.GetKeyDown(perspectiveSwitchingKey_L);
                     //interactInput = Input.GetKeyDown(interactKey_L);
                     //movement
@@ -394,7 +398,7 @@ namespace SUPERCharacte
                     if (!tengoBoleadoras)
                     {
                         #region Camera
-                        if (enableCameraControl)
+                        /*if (enableCameraControl)
                         {
                             switch (cameraPerspective)
                             {
@@ -441,7 +445,7 @@ namespace SUPERCharacte
                              {
                                  if (statsPanel.gameObject.activeSelf) statsPanel.gameObject.SetActive(false);
 
-                             } */
+                             } *//*
                             if (enableStaminaSystem)
                             {
                                 if (!stamMeterBG.gameObject.activeSelf) stamMeterBG.gameObject.SetActive(true);
@@ -474,19 +478,19 @@ namespace SUPERCharacte
                         if (currentStance == Stances.Standing && !changingStances)
                         {
                             internalEyeHeight = standingEyeHeight;
-                        }
+                        }*/
                         #endregion
 
                         //if(Input.GetKeyDown(KeyCode.Mouse0))
                         if (!atacando && !cubriendose)
                         {
                             #region Movement
-                            if (cameraPerspective == PerspectiveModes._3rdPerson && !atacando)
+                            if (cameraPro.cameraPerspective == PerspectiveModes._3rdPerson && !atacando)
                             {
-                                HeadRotDirForInput = Mathf.MoveTowardsAngle(HeadRotDirForInput, headRot.y, bodyCatchupSpeed * (1 + Time.deltaTime));
-                                MovInput_Smoothed = Vector2.MoveTowards(MovInput_Smoothed, MovInput, inputResponseFiltering * (1 + Time.deltaTime));
+                                HeadRotDirForInput = Mathf.MoveTowardsAngle(HeadRotDirForInput, cameraPro.headRot.y, cameraPro.bodyCatchupSpeed * (1 + Time.deltaTime));
+                                MovInput_Smoothed = Vector2.MoveTowards(MovInput_Smoothed, MovInput, cameraPro.inputResponseFiltering * (1 + Time.deltaTime));
                             }
-                            InputDir = cameraPerspective == PerspectiveModes._1stPerson ? Vector3.ClampMagnitude((transform.forward * MovInput.y + transform.right * (viewInputMethods == ViewInputModes.Traditional ? MovInput.x : 0)), 1) : Quaternion.AngleAxis(HeadRotDirForInput, Vector3.up) * (Vector3.ClampMagnitude((Vector3.forward * MovInput_Smoothed.y + Vector3.right * MovInput_Smoothed.x), 1));
+                            InputDir = cameraPro.cameraPerspective == PerspectiveModes._1stPerson ? Vector3.ClampMagnitude((transform.forward * MovInput.y + transform.right * (cameraPro.viewInputMethods == ViewInputModes.Traditional ? MovInput.x : 0)), 1) : Quaternion.AngleAxis(HeadRotDirForInput, Vector3.up) * (Vector3.ClampMagnitude((Vector3.forward * MovInput_Smoothed.y + Vector3.right * MovInput_Smoothed.x), 1));
                             GroundMovementSpeedUpdate();
                             if (canJump && !tengoFacon && !tengoRifle && !tengoBoleadoras && (holdJump ? jumpInput_Momentary : jumpInput_FrameOf)) { Jump(jumpPower); }
                             #endregion
@@ -540,13 +544,13 @@ namespace SUPERCharacte
                     }
 
                     #region Camera
-                    RotateView(MouseXY, Sensitivity, rotationWeight);
+                    /*RotateView(MouseXY, Sensitivity, rotationWeight);
                     if (cameraPerspective == PerspectiveModes._3rdPerson)
                     {
                         UpdateBodyRotation_3rdPerson();
                         UpdateCameraPosition_3rdPerson();
                     }
-
+                    */
                     #endregion
                 }
                 else
@@ -563,10 +567,6 @@ namespace SUPERCharacte
             atacando = false;
         }
 
-        void EquiparFacon()
-        {
-
-        }
         #region Movement2
         public void MovePlayer()
         {
@@ -588,8 +588,8 @@ namespace SUPERCharacte
                #endregion
            }*/
 
-        #region Camera Functions
-        void RotateView(Vector2 yawPitchInput, float inputSensitivity, float cameraWeight)
+        #region Camera Function
+        /*void RotateView(Vector2 yawPitchInput, float inputSensitivity, float cameraWeight)
         {
 
             switch (viewInputMethods)
@@ -753,10 +753,10 @@ namespace SUPERCharacte
                         {
                             _1stPersonCharacterAnimator.gameObject.SetActive(true);
                         }*/
-                        if (crosshairImg && autoGenerateCrosshair)
+                        /*if (crosshairImg && autoGenerateCrosshair)
                         {
                             crosshairImg.gameObject.SetActive(true);
-                        }
+                        }*//*
                     }
                     break;
 
@@ -780,7 +780,7 @@ namespace SUPERCharacte
                         {
                             _1stPersonCharacterAnimator.gameObject.SetActive(false);
                         }*/
-                        if (crosshairImg && autoGenerateCrosshair)
+                        /*if (crosshairImg && autoGenerateCrosshair)
                         {
                             if (!showCrosshairIn3rdPerson)
                             {
@@ -790,7 +790,7 @@ namespace SUPERCharacte
                             {
                                 crosshairImg.gameObject.SetActive(true);
                             }
-                        }
+                        }*//*
                     }
                     break;
             }
@@ -827,7 +827,7 @@ namespace SUPERCharacte
                 playerCamera.transform.localPosition = (Vector2)headbobCameraPosition;
                 if (StepCycle > (headbobCyclePosition * 3)) { StepCycle = headbobCyclePosition + 0.5f; }
             }
-        }*/
+        }*//*
         void UpdateCameraPosition_3rdPerson()
         {
 
@@ -872,6 +872,7 @@ namespace SUPERCharacte
                 transform.localRotation = (Quaternion.Euler(Vector3.up * Mathf.MoveTowardsAngle(p_Rigidbody.rotation.eulerAngles.y, headRot.y, 10)));
             }
         }
+        */
         #endregion
 
         #region Movement Functions
@@ -1296,12 +1297,12 @@ namespace SUPERCharacte
         {
             currentStance = newStance;
             float targetCapsuleHeight = currentStance == Stances.Standing ? standingHeight : crouchingHeight;
-            float targetEyeHeight = currentStance == Stances.Standing ? standingEyeHeight : crouchingEyeHeight;
+            float targetEyeHeight = currentStance == Stances.Standing ? cameraPro.standingEyeHeight : cameraPro.crouchingEyeHeight;
             while (!Mathf.Approximately(capsule.height, targetCapsuleHeight))
             {
                 changingStances = true;
                 capsule.height = (smoothSpeed > 0 ? Mathf.MoveTowards(capsule.height, targetCapsuleHeight, stanceTransitionSpeed * Time.fixedDeltaTime) : targetCapsuleHeight);
-                internalEyeHeight = (smoothSpeed > 0 ? Mathf.MoveTowards(internalEyeHeight, targetEyeHeight, stanceTransitionSpeed * Time.fixedDeltaTime) : targetCapsuleHeight);
+                cameraPro.internalEyeHeight = (smoothSpeed > 0 ? Mathf.MoveTowards(cameraPro.internalEyeHeight, targetEyeHeight, stanceTransitionSpeed * Time.fixedDeltaTime) : targetCapsuleHeight);
 
                 if (currentStance == Stances.Crouching && currentGroundInfo.isGettingGroundInfo)
                 {
@@ -1364,7 +1365,7 @@ namespace SUPERCharacte
             {
                 if (_2DVelocity.magnitude > (currentGroundSpeed / 100) && !isIdle)
                 {
-                    if (cameraPerspective == PerspectiveModes._1stPerson)
+                    if (cameraPro.cameraPerspective == PerspectiveModes._1stPerson)
                     {
                         /*if ((enableHeadbob ? headbobCyclePosition : Time.time) > StepCycle && currentGroundInfo.isGettingGroundInfo && !isSliding)
                         {
@@ -1457,7 +1458,7 @@ namespace SUPERCharacte
         #region Animator Update
         void UpdateAnimationTriggers(bool zeroOut = false)
         {
-            switch (cameraPerspective)
+            switch (cameraPro.cameraPerspective)
             {
                 case PerspectiveModes._1stPerson:
                     {
@@ -1772,9 +1773,9 @@ namespace SUPERCharacte
     public enum StatSelector { Health, Hunger, Hydration }
     public enum MatProfileType { Material, terrainLayer, physicMaterial }
     public enum FootstepTriggeringMode { calculatedTiming, calledFromAnimations }
-    public enum PerspectiveModes { _1stPerson, _3rdPerson }
-    public enum ViewInputModes { Traditional, Retro }
-    public enum MouseInputInversionModes { None, X, Y, Both }
+    //public enum PerspectiveModes { _1stPerson, _3rdPerson } //Borrar camara
+    //public enum ViewInputModes { Traditional, Retro } //Borrar camara
+    //public enum MouseInputInversionModes { None, X, Y, Both } //Borrar camara
     public enum GroundSpeedProfiles { Crouching, Walking, Sprinting, Sliding }
     public enum Stances { Standing, Crouching }
     public enum PauseModes { MakeKinematic, FreezeInPlace, BlockInputOnly }
@@ -1848,17 +1849,18 @@ namespace SUPERCharacte
             //GUILayout.Label("<b><i><size=18><color=#FC80A5>S</color><color=#FFFF9F>U</color><color=#99FF99>P</color><color=#76D7EA>E</color><color=#BF8FCC>R</color></size></i></b> <size=12><i>Character Controller</i></size>", l_scriptHeaderStyle, GUILayout.ExpandWidth(true));
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider, GUILayout.MaxHeight(6)); EditorGUILayout.Space();
             #endregion*/
-            t.controller = (Controller)EditorGUILayout.ObjectField(new GUIContent("Player", "The "), t.controller, typeof(Controller), true);
-            t.posCamera = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Posicion Camara", "The "), t.posCamera, typeof(GameObject), true);
-            t.speed = EditorGUILayout.Slider(new GUIContent("", ""), t.speed, 0.0f, 10.0f);
-            t.speedRotate = EditorGUILayout.Slider(new GUIContent("", ""), t.speedRotate, 50.0f, 300.0f);
+            t.controller = (Controller)EditorGUILayout.ObjectField(new GUIContent("Comtroller Script", "Se usa para acceder a la variable que dice si se esta en el Menú Radial"), t.controller, typeof(Controller), true);
+            //t.posCamera = (GameObject)EditorGUILayout.ObjectField(new GUIContent("Posicion Camara(conBoleadoras)", "Referencia a la ubicación en la que estara la cámara CUANDO esté equipada las boleadoras"), t.posCamera, typeof(GameObject), true);
+            t.speed = EditorGUILayout.Slider(new GUIContent("Speed Player", "Velocidad de movimiento del Player CUANDO esté equipada las boleadoras"), t.speed, 0.0f, 10.0f);
+            t.speedRotate = EditorGUILayout.Slider(new GUIContent("Speed Rotate", "Velocidad de rotación CUANDO esté equipada las boleadoras"), t.speedRotate, 50.0f, 300.0f);
 
-            #region Camera Settings
+            #region Camera Setti
+            /*
             GUILayout.Label("Camera Settings", labelHeaderStyle, GUILayout.ExpandWidth(true));
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical(BoxPanel);
-            t.enableCameraControl = EditorGUILayout.ToggleLeft(new GUIContent("Enable Camera Control", "Should the player have control over the camera?"), t.enableCameraControl);
-            t.playerCamera = (Camera)EditorGUILayout.ObjectField(new GUIContent("Player Camera", "The Camera Attached to the Player."), t.playerCamera, typeof(Camera), true);
+            t.enableCameraControl = EditorGUILayout.ToggleLeft(new GUIContent("Habilitar control de cámara", "¿Debería el jugador tener control sobre la cámara?"), t.enableCameraControl);
+            t.playerCamera = (Camera)EditorGUILayout.ObjectField(new GUIContent("Player Camera", "La cámara adjunta al jugador."), t.playerCamera, typeof(Camera), true);
             //t.cameraPerspective = (PerspectiveModes)EditorGUILayout.EnumPopup(new GUIContent("Camera Perspective Mode", "The current perspective of the character."), t.cameraPerspective);
             //if(t.cameraPerspective == PerspectiveModes._3rdPerson){EditorGUILayout.HelpBox("3rd Person perspective is currently very experimental. Bugs and other adverse effects may occur.",MessageType.Info);}
 
@@ -1866,50 +1868,50 @@ namespace SUPERCharacte
 
             if (cameraSettingsFoldout)
             {
-                t.automaticallySwitchPerspective = EditorGUILayout.ToggleLeft(new GUIContent("Automatically Switch Perspective", "Should the Camera perspective mode automatically change based on the distance between the camera and the character's head?"), t.automaticallySwitchPerspective);
+                t.automaticallySwitchPerspective = EditorGUILayout.ToggleLeft(new GUIContent("Cambiar perspectiva automáticamente", "¿Debería el modo de perspectiva de la cámara cambiar automáticamente según la distancia entre la cámara y la cabeza del personaje?"), t.automaticallySwitchPerspective);
 /*#if ENABLE_INPUT_SYSTEM
             t.perspectiveSwitchingKey = (Key)EditorGUILayout.EnumPopup(new GUIContent("Perspective Switch Key", "The keyboard key used to switch perspective modes. Set to none if you do not wish to allow perspective switching"),t.perspectiveSwitchingKey);
 #else
                 if (!t.automaticallySwitchPerspective) { t.perspectiveSwitchingKey_L = (KeyCode)EditorGUILayout.EnumPopup(new GUIContent("Perspective Switch Key", "The keyboard key used to switch perspective modes. Set to none if you do not wish to allow perspective switching"), t.perspectiveSwitchingKey_L); }
 #endif*/
-                t.mouseInputInversion = (MouseInputInversionModes)EditorGUILayout.EnumPopup(new GUIContent("Mouse Input Inversion", "Which axes of the mouse input should be inverted if any?"), t.mouseInputInversion);
+           /*     t.mouseInputInversion = (MouseInputInversionModes)EditorGUILayout.EnumPopup(new GUIContent("Mouse Input Inversion", "¿Qué ejes de la entrada del mouse deberían invertirse, si corresponde?"), t.mouseInputInversion);
                 t.Sensitivity = EditorGUILayout.Slider(new GUIContent("Mouse Sensitivity", "Sensitivity of the mouse"), t.Sensitivity, 1, 20);
-                t.rotationWeight = EditorGUILayout.Slider(new GUIContent("Camera Weight", "How heavy should the camera feel?"), t.rotationWeight, 1, 25);
-                t.verticalRotationRange = EditorGUILayout.Slider(new GUIContent("Vertical Rotation Range", "The vertical angle range (In degrees) that the camera is allowed to move in"), t.verticalRotationRange, 1, 180);
+                t.rotationWeight = EditorGUILayout.Slider(new GUIContent("Camera Weight", "¿Qué tan pesada debe sentirse la cámara?"), t.rotationWeight, 1, 25);
+                t.verticalRotationRange = EditorGUILayout.Slider(new GUIContent("Vertical Rotation Range", "The vertical angle range (In degrees) that the camera is allowed to move in \n El rango de ángulo vertical (en grados) en el que la cámara puede moverse"), t.verticalRotationRange, 1, 180);
 
-                t.lockAndHideMouse = EditorGUILayout.ToggleLeft(new GUIContent("Lock and Hide mouse Cursor", "Should the controller lock and hide the cursor?"), t.lockAndHideMouse);
-                t.autoGenerateCrosshair = EditorGUILayout.ToggleLeft(new GUIContent("Auto Generate Crosshair", "Should the controller automatically generate a crosshair?"), t.autoGenerateCrosshair);
+                t.lockAndHideMouse = EditorGUILayout.ToggleLeft(new GUIContent("Lock and Hide mouse Cursor", "Should the controller lock and hide the cursor?\n ¿Debería el controlador bloquear y ocultar el cursor?"), t.lockAndHideMouse);
+                /*t.autoGenerateCrosshair = EditorGUILayout.ToggleLeft(new GUIContent("Auto Generate Crosshair", "Should the controller automatically generate a crosshair?"), t.autoGenerateCrosshair);
                 GUI.enabled = t.autoGenerateCrosshair;
                 t.crosshairSprite = (Sprite)EditorGUILayout.ObjectField(new GUIContent("Crosshair Sprite", "The Sprite the controller will use when generating a crosshair."), t.crosshairSprite, typeof(Sprite), false, GUILayout.Height(EditorGUIUtility.singleLineHeight));
-                t.showCrosshairIn3rdPerson = EditorGUILayout.ToggleLeft(new GUIContent("Show Crosshair in 3rd person?", "Should the controller show the crosshair in 3rd person?"), t.showCrosshairIn3rdPerson);
-                GUI.enabled = true;
-                t.drawPrimitiveUI = EditorGUILayout.ToggleLeft(new GUIContent("Draw Primitive UI", "Should the controller automatically generate and draw primitive stat UI?"), t.drawPrimitiveUI);
+                t.showCrosshairIn3rdPerson = EditorGUILayout.ToggleLeft(new GUIContent("Show Crosshair in 3rd person?", "Should the controller show the crosshair in 3rd person?"), t.showCrosshairIn3rdPerson);*/
+           /*     GUI.enabled = true;
+                t.drawPrimitiveUI = EditorGUILayout.ToggleLeft(new GUIContent("Draw Primitive UI", "Should the controller automatically generate and draw primitive stat UI?\n ¿Debería el controlador generar y dibujar automáticamente la interfaz de usuario de estadísticas primitivas?"), t.drawPrimitiveUI);
                 EditorGUILayout.Space(20);
 
                 if (t.cameraPerspective == PerspectiveModes._1stPerson)
                 {
-                    t.viewInputMethods = (ViewInputModes)EditorGUILayout.EnumPopup(new GUIContent("Camera Input Methods", "The input method used to rotate the camera."), t.viewInputMethods);
-                    t.standingEyeHeight = EditorGUILayout.Slider(new GUIContent("Standing Eye Height", "The Eye height of the player measured from the center of the character's capsule and upwards."), t.standingEyeHeight, 0, 1);
-                    t.crouchingEyeHeight = EditorGUILayout.Slider(new GUIContent("Crouching Eye Height", "The Eye height of the player measured from the center of the character's capsule and upwards."), t.crouchingEyeHeight, 0, 1);
-                    t.FOVKickAmount = EditorGUILayout.Slider(new GUIContent("FOV Kick Amount", "How much should the camera's FOV change based on the current movement speed?"), t.FOVKickAmount, 0, 50);
-                    t.FOVSensitivityMultiplier = EditorGUILayout.Slider(new GUIContent("FOV Sensitivity Multiplier", "How much should the camera's FOV effect the mouse sensitivity? (Lower FOV = less sensitive)"), t.FOVSensitivityMultiplier, 0, 1);
+                    t.viewInputMethods = (ViewInputModes)EditorGUILayout.EnumPopup(new GUIContent("Camera Input Methods", "The input method used to rotate the camera.\n El método de entrada utilizado para rotar la cámara."), t.viewInputMethods);
+                    t.standingEyeHeight = EditorGUILayout.Slider(new GUIContent("Standing Eye Height", "The Eye height of the player measured from the center of the character's capsule and upwards.\n La altura de los ojos del jugador medida desde el centro de la cápsula del personaje y hacia arriba."), t.standingEyeHeight, 0, 1);
+                    t.crouchingEyeHeight = EditorGUILayout.Slider(new GUIContent("Crouching Eye Height \n Altura de los ojos en cuclillas", "The Eye height of the player measured from the center of the character's capsule and upwards."), t.crouchingEyeHeight, 0, 1);
+                    t.FOVKickAmount = EditorGUILayout.Slider(new GUIContent("FOV Kick Amount", "How much should the camera's FOV change based on the current movement speed? \n ¿Cuánto debería cambiar el campo de visión de la cámara en función de la velocidad de movimiento actual?"), t.FOVKickAmount, 0, 50);
+                    t.FOVSensitivityMultiplier = EditorGUILayout.Slider(new GUIContent("FOV Sensitivity Multiplier", "How much should the camera's FOV effect the mouse sensitivity? (Lower FOV = less sensitive) \n ¿Cuánto debería afectar el campo de visión de la cámara a la sensibilidad del mouse? (FOV más bajo = menos sensible)"), t.FOVSensitivityMultiplier, 0, 1);
                 }
                 else
                 {
-                    t.rotateCharacterToCameraForward = EditorGUILayout.ToggleLeft(new GUIContent("Rotate Ungrounded Character to Camera Forward", "Should the character get rotated towards the camera's forward facing direction when mid air?"), t.rotateCharacterToCameraForward);
-                    t.standingEyeHeight = EditorGUILayout.Slider(new GUIContent("Head Height", "The Head height of the player measured from the center of the character's capsule and upwards."), t.standingEyeHeight, 0, 1);
-                    t.maxCameraDistance = EditorGUILayout.Slider(new GUIContent("Max Camera Distance", "The farthest distance the camera is allowed to hover from the character's head"), t.maxCameraDistance, 0, 15);
-                    t.cameraZoomSensitivity = EditorGUILayout.Slider(new GUIContent("Camera Zoom Sensitivity", "How sensitive should the mouse scroll wheel be when zooming the camera in and out?"), t.cameraZoomSensitivity, 1, 5);
-                    t.bodyCatchupSpeed = EditorGUILayout.Slider(new GUIContent("Body Mesh Alignment Speed", "How quickly will the body align itself with the camera's relative direction"), t.bodyCatchupSpeed, 0, 5);
-                    t.inputResponseFiltering = EditorGUILayout.Slider(new GUIContent("Input Response Filtering", "How quickly will the internal input direction align itself the player's input"), t.inputResponseFiltering, 0, 5);
-                    EditorGUILayout.PropertyField(obstructionMaskField, new GUIContent("Camera Obstruction Layers", "The Layers the camera will register as an obstruction and move in front of ."));
+                    t.rotateCharacterToCameraForward = EditorGUILayout.ToggleLeft(new GUIContent("Rotate Ungrounded Character to Camera Forward", "Should the character get rotated towards the camera's forward facing direction when mid air? \n ¿Debería girarse el personaje hacia la dirección frontal de la cámara cuando está en el aire?"), t.rotateCharacterToCameraForward);
+                    t.standingEyeHeight = EditorGUILayout.Slider(new GUIContent("Head Height", "The Head height of the player measured from the center of the character's capsule and upwards. \n La altura de la cabeza del jugador medida desde el centro de la cápsula del personaje hacia arriba."), t.standingEyeHeight, 0, 1);
+                    t.maxCameraDistance = EditorGUILayout.Slider(new GUIContent("Max Camera Distance", "The farthest distance the camera is allowed to hover from the character's head \n La distancia más alejada que la cámara puede flotar desde la cabeza del personaje."), t.maxCameraDistance, 0, 15);
+                    t.cameraZoomSensitivity = EditorGUILayout.Slider(new GUIContent("Camera Zoom Sensitivity", "How sensitive should the mouse scroll wheel be when zooming the camera in and out? \n ¿Qué tan sensible debe ser la rueda de desplazamiento del mouse al acercar y alejar la cámara?"), t.cameraZoomSensitivity, 1, 5);
+                    t.bodyCatchupSpeed = EditorGUILayout.Slider(new GUIContent("Body Mesh Alignment Speed", "How quickly will the body align itself with the camera's relative direction \n ¿Qué tan rápido se alineará el cuerpo con la dirección relativa de la cámara?"), t.bodyCatchupSpeed, 0, 5);
+                    t.inputResponseFiltering = EditorGUILayout.Slider(new GUIContent("Input Response Filtering", "How quickly will the internal input direction align itself the player's input \n ¿Qué tan rápido se alineará la dirección de entrada interna con la entrada del jugador?"), t.inputResponseFiltering, 0, 5);
+                    EditorGUILayout.PropertyField(obstructionMaskField, new GUIContent("Camera Obstruction Layers", "The Layers the camera will register as an obstruction and move in front of. \n Las capas que la cámara registrará como una obstrucción y se moverá frente a ellas."));
                 }
             }
             EditorGUILayout.Space();
             cameraSettingsFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(cameraSettingsFoldout, cameraSettingsFoldout ? "<color=#B83C82>show less</color>" : "<color=#B83C82>show more</color>", ShowMoreStyle);
             EditorGUILayout.EndFoldoutHeaderGroup();
             EditorGUILayout.EndVertical();
-            if (GUI.changed) { EditorUtility.SetDirty(t); Undo.RecordObject(t, "Undo Camera Setting changes"); tSO.ApplyModifiedProperties(); }
+            if (GUI.changed) { EditorUtility.SetDirty(t); Undo.RecordObject(t, "Undo Camera Setting changes"); tSO.ApplyModifiedProperties(); }*/
             #endregion
 
             #region Movement Settings
