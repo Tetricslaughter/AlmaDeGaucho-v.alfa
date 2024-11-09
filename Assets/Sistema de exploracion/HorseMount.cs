@@ -2,12 +2,16 @@ using SUPERCharacte;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class HorseMount : MonoBehaviour
 {
     public Transform player; // Referencia al player
     public Transform mountPoint; // El punto donde el player se posicionará al montar
     public float mountDistance = 2f; // Distancia máxima para poder montar
+
+    private NavMeshAgent agent;
+    private HorseFollowNavMesh followNavMesh;
 
     private bool isMounted = false;
     private JuanMoveBehaviour playerMovement; // Referencia al script de movimiento del player
@@ -20,6 +24,8 @@ public class HorseMount : MonoBehaviour
         playerMovement = player.GetComponent<JuanMoveBehaviour>();
         playerRb = player.GetComponent<Rigidbody>();
         playerCollider = player.GetComponent<CapsuleCollider>();
+        agent = GetComponent<NavMeshAgent>();
+        followNavMesh = GetComponent<HorseFollowNavMesh>();
     }
 
     void Update()
@@ -54,6 +60,8 @@ public class HorseMount : MonoBehaviour
         player.parent = transform; // Hacer que el player sea hijo del caballo
 
         // Habilitar el control del caballo
+        agent.enabled = false;
+        followNavMesh.enabled = false;
         GetComponent<MovementHorse>().enabled = true;
         playerAnimator.SetBool("Sentado", true);
     }
@@ -66,6 +74,8 @@ public class HorseMount : MonoBehaviour
 
         // Desactivar el control del caballo
         GetComponent<MovementHorse>().enabled = false;
+        agent.enabled = true;
+        followNavMesh.enabled = true;
 
         // Permitir que el player se mueva de nuevo
         playerMovement.enabled = true;
