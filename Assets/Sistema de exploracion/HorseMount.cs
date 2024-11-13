@@ -17,6 +17,7 @@ public class HorseMount : MonoBehaviour
     private JuanMoveBehaviour playerMovement; // Referencia al script de movimiento del player
     private Rigidbody playerRb;
     private CapsuleCollider playerCollider;
+    private Controller playerController;
     public Animator playerAnimator;
 
     void Start()
@@ -24,6 +25,7 @@ public class HorseMount : MonoBehaviour
         playerMovement = player.GetComponent<JuanMoveBehaviour>();
         playerRb = player.GetComponent<Rigidbody>();
         playerCollider = player.GetComponent<CapsuleCollider>();
+        playerController = player.GetComponent<Controller>();
         agent = GetComponent<NavMeshAgent>();
         followNavMesh = GetComponent<HorseFollowNavMesh>();
     }
@@ -33,15 +35,17 @@ public class HorseMount : MonoBehaviour
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
         // Montar el caballo
-        if (distanceToPlayer <= mountDistance && Input.GetKeyDown(KeyCode.E) && !isMounted)
+        if (distanceToPlayer <= mountDistance && Input.GetKeyDown(KeyCode.E) && !isMounted && !playerMovement.tengoBoleadoras && !playerMovement.tengoFacon)
         {
             MountHorse();
+            playerController.puedoUsarMenu = false;
         }
 
         // Desmontar el caballo
         if (isMounted && Input.GetKeyDown(KeyCode.Q))
         {
             DismountHorse();
+            playerController.puedoUsarMenu = true;
         }
     }
 
