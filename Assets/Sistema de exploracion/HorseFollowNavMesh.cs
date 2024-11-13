@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class HorseFollowNavMesh : MonoBehaviour
 {
     public Transform player; // Referencia al jugador
-    public float stopDistance = 4f; // Distancia mínima para detenerse
+    public float stopDistance = 6f; // Distancia mínima para detenerse
     public float maxDistance = 20f; // Distancia máxima para correr
     public float walkSpeed = 2f; // Velocidad caminando
     public float trotSpeed = 6f; // Velocidad trotando
